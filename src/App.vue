@@ -5,11 +5,8 @@
     <router-view />
   </div>
 </template>
-<script>
+
+<script setup>
 import Header from './components/Header.vue';
 import NavBar from './components/NavBar.vue';
-
-export default {
-  components: { Header, NavBar }
-}
 </script>
