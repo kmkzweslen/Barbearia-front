@@ -79,29 +79,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'; // MELHORIA: Adicionado 'watch'
+import { ref, onMounted, watch } from 'vue';
 import { useApiServicos } from '@/composables/useApiServicos';
 import { useApiClientes } from '@/composables/useApiClientes';
 
-// --- Imports dos Composables ---
 const { buscarTodosServicos, criarServico, editarServico, excluirServico } = useApiServicos();
 const { buscarTodosClientes, criarCliente, editarCliente, excluirCliente } = useApiClientes();
 
-// --- Estado da UI ---
-const selected = ref('servicos'); // MELHORIA: Inicia na aba de serviços
+const selected = ref('servicos');
 
-// MELHORIA: Refs de Loading Granulares
 const isLoadingServicos = ref(false);
 const isLoadingClientes = ref(false);
 const isSavingServico = ref(false);
 const isSavingCliente = ref(false);
 
-// MELHORIA: Refs de Erro Granulares
 const errorServicos = ref(null);
 const errorClientes = ref(null);
 const validationErrors = ref({ servico: null, cliente: null });
 
-// --- Estado dos Dados ---
 const servicos = ref([]);
 const clientes = ref([]);
 
@@ -112,15 +107,12 @@ const formCliente = ref({ nome: '', telefone: '', email: '' });
 const isEditingCliente = ref(false);
 let originalClienteEmail = null;
 
-// --- Funções de Carregamento de Dados ---
-
-// MELHORIA: Funções separadas para carregar cada lista
 const fetchAllServicos = async () => {
   isLoadingServicos.value = true;
-  errorServicos.value = null; // Limpa erros antigos
+  errorServicos.value = null;
   try {
     const { data, error } = await buscarTodosServicos();
-    if (error) throw error; // Joga o erro para o catch
+    if (error) throw error;
     if (data) servicos.value = data;
   } catch (error) {
     console.error("Erro ao buscar serviços:", error);
@@ -145,42 +137,35 @@ const fetchAllClientes = async () => {
   }
 };
 
-// MELHORIA: Carrega a primeira aba ao montar
 onMounted(fetchAllServicos);
 
-// MELHORIA: Carrega a outra aba quando o usuário clicar nela
 watch(selected, (newValue) => {
   if (newValue === 'clientes' && clientes.value.length === 0) {
     fetchAllClientes();
   }
 });
 
-// Função para trocar de aba
 const selectTab = (tab) => {
   selected.value = tab;
 };
 
-// MELHORIA: Função centralizada para tratar erros de API
 const handleApiError = (type, error) => {
   console.error(`Erro ao salvar ${type}:`, error);
   if (error.statusCode === 422 && error.data?.errors) {
-    // Erro de Validação
     if (type === 'servico') {
       validationErrors.value.servico = error.data.errors;
     } else {
       validationErrors.value.cliente = error.data.errors;
     }
   } else {
-    // Erro genérico
     alert(`Erro: ${error.message || 'Não foi possível salvar.'}`);
   }
 };
 
 
-// --- Lógica de Serviços ---
 const handleServicoSubmit = async () => {
   isSavingServico.value = true;
-  validationErrors.value.servico = null; // Limpa erros antigos
+  validationErrors.value.servico = null;
   let response;
 
   try {
@@ -190,10 +175,9 @@ const handleServicoSubmit = async () => {
       response = await criarServico(formServico.value);
     }
 
-    if (response.error) throw response.error; // Joga o erro para o catch
+    if (response.error) throw response.error;
 
-    // Sucesso
-    await fetchAllServicos(); // MELHORIA: Sempre recarrega a lista
+    await fetchAllServicos();
     cancelEditServico();
 
   } catch (error) {
@@ -206,25 +190,24 @@ const handleServicoSubmit = async () => {
 const editServico = (servico) => {
   formServico.value = { ...servico };
   isEditingServico.value = true;
-  window.scrollTo(0, 0); // Rola para o topo para editar
+  window.scrollTo(0, 0);
 };
 
 const cancelEditServico = () => {
   formServico.value = { id: null, nome: '', preco: 0, descricao: '' };
   isEditingServico.value = false;
-  validationErrors.value.servico = null; // Limpa erros do form
+  validationErrors.value.servico = null;
 };
 
 const removerServico = async (id) => {
   if (!confirm('Tem certeza que deseja excluir este serviço?')) return;
 
-  isSavingServico.value = true; // Reutiliza o 'isSaving' para bloquear a UI
+  isSavingServico.value = true;
   try {
     const { error } = await excluirServico(id);
     if (error) throw error;
 
-    // Sucesso
-    await fetchAllServicos(); // MELHORIA: Sempre recarrega a lista
+    await fetchAllServicos();
 
   } catch (error) {
     handleApiError('servico', error);
@@ -233,7 +216,6 @@ const removerServico = async (id) => {
   }
 };
 
-// --- Lógica de Clientes ---
 const handleClienteSubmit = async () => {
   isSavingCliente.value = true;
   validationErrors.value.cliente = null;
@@ -241,9 +223,6 @@ const handleClienteSubmit = async () => {
 
   try {
     if (isEditingCliente.value) {
-      // Nota: Seu backend espera 'originalEmail' para 'editarCliente'?
-      // Se sim, seu composable 'editarCliente' precisa ser ajustado.
-      // Assumindo que o 'editarCliente' só precisa do objeto cliente (com o email novo/antigo):
       response = await editarCliente(formCliente.value);
     } else {
       response = await criarCliente(formCliente.value);
@@ -251,8 +230,7 @@ const handleClienteSubmit = async () => {
 
     if (response.error) throw response.error;
 
-    // Sucesso
-    await fetchAllClientes(); // MELHORIA: Sempre recarrega
+    await fetchAllClientes();
     cancelEditCliente();
 
   } catch (error) {
@@ -264,7 +242,6 @@ const handleClienteSubmit = async () => {
 
 const editCliente = (cliente) => {
   formCliente.value = { ...cliente };
-  // originalClienteEmail = cliente.email; // Você não precisa mais disso se 'editarCliente' for inteligente
   isEditingCliente.value = true;
   window.scrollTo(0, 0);
 };
@@ -273,7 +250,6 @@ const cancelEditCliente = () => {
   formCliente.value = { nome: '', telefone: '', email: '' };
   isEditingCliente.value = false;
   validationErrors.value.cliente = null;
-  // originalClienteEmail = null;
 };
 
 const removerCliente = async (email) => {
@@ -284,8 +260,7 @@ const removerCliente = async (email) => {
     const { error } = await excluirCliente(email);
     if (error) throw error;
 
-    // Sucesso
-    await fetchAllClientes(); // MELHORIA: Sempre recarrega
+    await fetchAllClientes();
 
   } catch (error) {
     handleApiError('cliente', error);
@@ -296,7 +271,6 @@ const removerCliente = async (email) => {
 </script>
 
 <style scoped>
-/* Seu CSS original... */
 .admin-dashboard {
   padding: 20px;
   background: #111;
@@ -332,7 +306,6 @@ button:hover {
   background-color: #4477cc;
 }
 
-/* MELHORIA: Estilo de botão desabilitado */
 button:disabled {
   background-color: #555;
   color: #999;

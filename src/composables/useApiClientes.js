@@ -1,82 +1,67 @@
-import { useFetch } from '@vueuse/core'
 import { api } from '@/utils/api'
 
 export function useApiClientes() {
 
     const criarCliente = async (dadosCliente) => {
         try {
-            const { data, error } = await useFetch('/criarCliente', {
-                fetch: api,
+            const data = await api('/criarCliente', {
                 method: 'POST',
                 body: dadosCliente
-            }).json()
-
-            if (error.value) throw (error.value)
-            return { data: data.value, error: null }
+            });
+            return { data: data, error: null };
         } catch (err) {
-            return { data: null, error: err.data || err }
+            return { data: null, error: err };
         }
     }
 
     const editarCliente = async (dadosClienteAtualizados) => {
         try {
-            const { data, error } = await useFetch('/atualizarCliente', {
-                fetch: api,
+            const data = await api('/atualizarCliente', {
                 method: 'PUT',
                 body: dadosClienteAtualizados
-            }).json()
-
-            if (error.value) throw (error.value)
-            return { data: data.value, error: null }
+            });
+            return { data: data, error: null };
         } catch (err) {
-            return { data: null, error: err.data || err }
+            return { data: null, error: err };
         }
     }
 
     const excluirCliente = async (email) => {
-        try {
-            const { error } = await useFetch('/deletarCliente', {
-                fetch: api,
+        try {            await api('/deletarCliente', {
                 method: 'DELETE',
-                params: { email: email}
-            })
-
-            if (error.value) throw (error.value)
-            return { success: true, error: null }
+                params: { email: email }
+            });
+            return { success: true, error: null };
         } catch (err) {
-            return { success: false, error: err.data || err }
+            return { success: false, error: err };
         }
     }
 
     const buscarCliente = async (email) => {
         try {
-            const { data, error } = await useFetch('/buscarCliente', {
-                fetch: api,
+            const data = await api('/buscarCliente', {
                 method: 'GET',
                 params: { email: email }
-            }).json()
-
-            if (error.value) throw (error.value)
-            return { data: data.value, error: null }
+            });
+            return { data: data, error: null };
         } catch (err) {
-            return { data: null, error: err.data || err }
+            return { data: null, error: err };
         }
     }
 
     const buscarTodosClientes = async () => {
-     try {
-        // ❗️ Assumindo que o endpoint é /clientes (ou algo similar)
-        const { data, error } = await useFetch('/clientes', { 
-            fetch: api,
-            method: 'GET'
-        }).json()
-        
-        if (error.value) throw (error.value)
-        return { data: data.value, error: null }
-     } catch (err) {
-        return { data: null, error: err.data || err }
-     }
-  }
+        try {
+            const data = await api('/buscarTodosClientes', {
+                method: 'GET'
+            });
+            if (data && Array.isArray(data)) {
+                return { data: data, error: null };
+            }
+            return { data: [], error: null };
+        } catch (err) {
+            return { data: null, error: err };
+        }
+    }
 
     return {
         criarCliente,

@@ -1,88 +1,98 @@
-import { useFetch } from '@vueuse/core' 
 import { api } from '@/utils/api' 
+
+const mapBackendToFrontend = (servico) => {
+  if (!servico) return null;
+  return {
+    id: servico.servicoId,
+    nome: servico.nome,
+    preco: servico.preco,
+    descricao: servico.descricao
+  };
+};
+
+const mapFrontendToBackend = (servico) => {
+  if (!servico) return null;
+  return {
+    servicoId: servico.id,
+    nome: servico.nome,
+    preco: servico.preco,
+    descricao: servico.descricao
+  };
+};
 
 export function useApiServicos() {
   
-  const criarServico = async (dadosServico) => {
+  const buscarTodosServicos = async () => {
     try {
-      const { data, error } = await useFetch('/criarServico', {
-        fetch: api, 
-        method: 'POST',
-        body: dadosServico
-      }).json()
+      const data = await api('/buscarTodosServicos', {
+        method: 'GET'
+      });
       
-      if (error.value) throw (error.value)
-      return { data: data.value, error: null }
-    } catch (err) {
-      return { data: null, error: err.data || err }
-    }
-  }
+      if (data && Array.isArray(data)) {
+        const dadosMapeados = data.map(mapBackendToFrontend);
+        return { data: dadosMapeados, error: null };
+      }
+      return { data: [], error: null };
 
-  const editarServico = async (dadosServicoAtualizados) => {
-    try {
-      const { data, error } = await useFetch('/atualizarServico', {
-        fetch: api,
-        method: 'PUT',
-        body: dadosServicoAtualizados 
-      }).json()
-
-      if (error.value) throw (error.value)
-      return { data: data.value, error: null }
     } catch (err) {
-      return { data: null, error: err.data || err }
+      console.error("Erro no composable (buscarTodosServicos):", err);
+      return { data: null, error: err }; 
     }
-  }
-
-  const excluirServico = async (id) => {
-    try {
-      const { error } = await useFetch('/deletarServico', {
-        fetch: api,
-        method: 'DELETE',
-        params: { id: id } // ❗️ Usa query param "?id=..."
-      })
-      
-      if (error.value) throw (error.value)
-      return { success: true, error: null }
-    } catch (err) {
-      return { success: false, error: err.data || err }
-    }
-  }
+  };
   
   const buscarServico = async (id) => {
      try {
-        const { data, error } = await useFetch('/buscarServico', {
-            fetch: api,
+        const data = await api('/buscarServico', {
             method: 'GET',
             params: { id: id }
-        }).json()
-        
-        if (error.value) throw (error.value)
-        return { data: data.value, error: null }
+        });
+        return { data: mapBackendToFrontend(data), error: null };
      } catch (err) {
-        return { data: null, error: err.data || err }
+        return { data: null, error: err };
      }
-  }
+  };
 
-  const buscarTodosServicos = async () => {
-     try {
-        // ❗️ Assumindo que o endpoint é /servicos (ou algo similar)
-        const { data, error } = await useFetch('/servicos', { 
-            fetch: api,
-            method: 'GET'
-        }).json()
-        
-        if (error.value) throw (error.value)
-        return { data: data.value, error: null }
-     } catch (err) {
-        return { data: null, error: err.data || err }
-     }
-  }
+  const criarServico = async (dadosServicoFrontend) => {
+    try {
+      const data = await api('/criarServico', {
+        method: 'POST',
+        body: dadosServicoFrontend
+      });
+      return { data: mapBackendToFrontend(data), error: null };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  };
+  const editarServico = async (servicoFrontend) => {
+    try {
+      const dadosParaBackend = mapFrontendToBackend(servicoFrontend);
+      const data = await api('/atualizarServico', {
+        method: 'PUT',
+        body: dadosParaBackend
+      });
+      return { data: mapBackendToFrontend(data), error: null };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  };
+
+  const excluirServico = async (idFrontend) => {
+    try {
+      await api('/deletarServico', {
+        method: 'DELETE',
+        params: { servicoId: idFrontend }
+      });
+      return { success: true, error: null };
+    } catch (err) {
+      return { success: false, error: err };
+    }
+  };
 
   return {
+    buscarTodosServicos,
+    buscarServico,
     criarServico,
     editarServico,
-    excluirServico,
-    buscarServico,
-    buscarTodosServicos
-  }
+    excluirServico
+  };
 }
