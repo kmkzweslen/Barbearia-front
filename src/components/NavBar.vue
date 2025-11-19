@@ -14,7 +14,7 @@
 export default {
   name: 'NavBar',
 };
-</script>
+</script> 
 
 <style scoped>
 .navbar {

@@ -1,77 +1,88 @@
 <template>
   <section class="admin-dashboard">
     <h1>Painel Administrativo</h1>
+    <button @click="logout" class="btn logout-btn">Sair</button>
     <div class="options">
-      <button @click="selectTab('servicos')" :disabled="isLoadingServicos || isLoadingClientes">
-        Gerenciar Serviços
-      </button>
-      <button @click="selectTab('clientes')" :disabled="isLoadingServicos || isLoadingClientes">
-        Gerenciar Clientes
-      </button>
+      <button @click="selectTab('servicos')" :disabled="isLoadingServicos || isLoadingClientes || isLoadingBarbeiros">Gerenciar Serviços</button>
+      <button @click="selectTab('clientes')" :disabled="isLoadingServicos || isLoadingClientes || isLoadingBarbeiros">Gerenciar Clientes</button>
+      <button @click="selectTab('barbeiros')" :disabled="isLoadingServicos || isLoadingClientes || isLoadingBarbeiros">Cadastrar Barbeiro</button>
     </div>
 
+    <!-- Serviços -->
     <div v-if="selected === 'servicos'">
       <h2>Serviços</h2>
-
       <div v-if="validationErrors.servico" class="validation-errors">
         <div v-for="error in validationErrors.servico" :key="error">{{ error[0] }}</div>
       </div>
-
       <form @submit.prevent="handleServicoSubmit">
         <input v-model="formServico.nome" placeholder="Nome do serviço" required />
         <input type="number" v-model.number="formServico.preco" placeholder="Preço do serviço" required />
         <input v-model="formServico.descricao" placeholder="Descrição do serviço" required />
-
         <button type="submit" :disabled="isSavingServico">
           {{ isSavingServico ? 'Salvando...' : (isEditingServico ? 'Atualizar Serviço' : 'Cadastrar Serviço') }}
         </button>
-        <button v-if="isEditingServico" type="button" @click="cancelEditServico" class="cancel-btn"
-          :disabled="isSavingServico">
-          Cancelar
-        </button>
+        <button v-if="isEditingServico" type="button" @click="cancelEditServico" class="cancel-btn" :disabled="isSavingServico">Cancelar</button>
       </form>
-
       <div v-if="isLoadingServicos">Carregando serviços...</div>
       <div v-if="errorServicos" class="error-list">{{ errorServicos }}</div>
-
       <ul>
         <li v-for="servico in servicos" :key="servico.id">
-          Nome: {{ servico.nome }}, Preço: R$ {{ servico.preco.toFixed(2) }}
+          Nome: {{ servico.nome }}, Preço: R$ {{ servico.preco.toFixed(2) }}, Descrição: {{ servico.descricao }}
           <button @click="editServico(servico)" :disabled="isSavingServico">Editar</button>
           <button @click="removerServico(servico.id)" class="delete-btn" :disabled="isSavingServico">Excluir</button>
         </li>
       </ul>
     </div>
 
+    <!-- Clientes -->
     <div v-if="selected === 'clientes'">
       <h2>Clientes</h2>
-
       <div v-if="validationErrors.cliente" class="validation-errors">
         <div v-for="error in validationErrors.cliente" :key="error">{{ error[0] }}</div>
       </div>
-
       <form @submit.prevent="handleClienteSubmit">
         <input v-model="formCliente.nome" placeholder="Nome do cliente" required />
         <input v-model="formCliente.telefone" placeholder="Telefone" required />
         <input v-model="formCliente.email" type="email" placeholder="E-mail" required />
-
         <button type="submit" :disabled="isSavingCliente">
           {{ isSavingCliente ? 'Salvando...' : (isEditingCliente ? 'Atualizar Cliente' : 'Cadastrar Cliente') }}
         </button>
-        <button v-if="isEditingCliente" type="button" @click="cancelEditCliente" class="cancel-btn"
-          :disabled="isSavingCliente">
-          Cancelar
-        </button>
+        <button v-if="isEditingCliente" type="button" @click="cancelEditCliente" class="cancel-btn" :disabled="isSavingCliente">Cancelar</button>
       </form>
-
       <div v-if="isLoadingClientes">Carregando clientes...</div>
       <div v-if="errorClientes" class="error-list">{{ errorClientes }}</div>
-
       <ul>
         <li v-for="cliente in clientes" :key="cliente.email">
           {{ cliente.nome }} - {{ cliente.telefone }} - {{ cliente.email }}
           <button @click="editCliente(cliente)" :disabled="isSavingCliente">Editar</button>
           <button @click="removerCliente(cliente.email)" class="delete-btn" :disabled="isSavingCliente">Excluir</button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Barbeiros -->
+    <div v-if="selected === 'barbeiros'">
+      <h2>Cadastro de Barbeiro</h2>
+      <div v-if="validationErrors.barbeiro" class="validation-errors">
+        <div v-for="error in validationErrors.barbeiro" :key="error">{{ error[0] }}</div>
+      </div>
+      <form @submit.prevent="handleBarbeiroSubmit">
+        <input v-model="formBarbeiro.nome" placeholder="Nome" required />
+        <input v-model="formBarbeiro.email" type="email" placeholder="E-mail" required />
+        <input v-model="formBarbeiro.telefone" placeholder="Telefone" required />
+        <input v-model="formBarbeiro.especialidade" placeholder="Especialidade" required />
+        <button type="submit" :disabled="isSavingBarbeiro">
+          {{ isSavingBarbeiro ? 'Salvando...' : (isEditingBarbeiro ? 'Atualizar' : 'Cadastrar') }}
+        </button>
+        <button v-if="isEditingBarbeiro" type="button" @click="cancelEditBarbeiro" class="cancel-btn" :disabled="isSavingBarbeiro">Cancelar</button>
+      </form>
+      <div v-if="isLoadingBarbeiros">Carregando barbeiros...</div>
+      <div v-if="errorBarbeiros" class="error-list">{{ errorBarbeiros }}</div>
+      <ul>
+        <li v-for="barbeiro in barbeiros" :key="barbeiro.email">
+          {{ barbeiro.nome }} - {{ barbeiro.email }} - {{ barbeiro.telefone }} - {{ barbeiro.especialidade }}
+          <button @click="editBarbeiro(barbeiro)" :disabled="isSavingBarbeiro">Editar</button>
+          <button @click="removerBarbeiro(barbeiro.email)" class="delete-btn" :disabled="isSavingBarbeiro">Excluir</button>
         </li>
       </ul>
     </div>
@@ -82,30 +93,38 @@
 import { ref, onMounted, watch } from 'vue';
 import { useApiServicos } from '@/composables/useApiServicos';
 import { useApiClientes } from '@/composables/useApiClientes';
+import { useApiBarbeiros } from '@/composables/useApiBarbeiro';
 
 const { buscarTodosServicos, criarServico, editarServico, excluirServico } = useApiServicos();
 const { buscarTodosClientes, criarCliente, editarCliente, excluirCliente } = useApiClientes();
+const { buscarTodosBarbeiros, criarBarbeiro, editarBarbeiro, excluirBarbeiro } = useApiBarbeiros();
 
 const selected = ref('servicos');
 
 const isLoadingServicos = ref(false);
 const isLoadingClientes = ref(false);
+const isLoadingBarbeiros = ref(false);
 const isSavingServico = ref(false);
 const isSavingCliente = ref(false);
+const isSavingBarbeiro = ref(false);
 
 const errorServicos = ref(null);
 const errorClientes = ref(null);
-const validationErrors = ref({ servico: null, cliente: null });
+const errorBarbeiros = ref(null);
+const validationErrors = ref({ servico: null, cliente: null, barbeiro: null });
 
 const servicos = ref([]);
 const clientes = ref([]);
+const barbeiros = ref([]);
 
 const formServico = ref({ id: null, nome: '', preco: 0, descricao: '' });
 const isEditingServico = ref(false);
 
 const formCliente = ref({ nome: '', telefone: '', email: '' });
 const isEditingCliente = ref(false);
-let originalClienteEmail = null;
+
+const formBarbeiro = ref({ nome: '', email: '', telefone: '' });
+const isEditingBarbeiro = ref(false);
 
 const fetchAllServicos = async () => {
   isLoadingServicos.value = true;
@@ -115,7 +134,6 @@ const fetchAllServicos = async () => {
     if (error) throw error;
     if (data) servicos.value = data;
   } catch (error) {
-    console.error("Erro ao buscar serviços:", error);
     errorServicos.value = "Não foi possível carregar os serviços.";
   } finally {
     isLoadingServicos.value = false;
@@ -130,10 +148,23 @@ const fetchAllClientes = async () => {
     if (error) throw error;
     if (data) clientes.value = data;
   } catch (error) {
-    console.error("Erro ao buscar clientes:", error);
     errorClientes.value = "Não foi possível carregar os clientes.";
   } finally {
     isLoadingClientes.value = false;
+  }
+};
+
+const fetchAllBarbeiros = async () => {
+  isLoadingBarbeiros.value = true;
+  errorBarbeiros.value = null;
+  try {
+    const { data, error } = await buscarTodosBarbeiros();
+    if (error) throw error;
+    if (data) barbeiros.value = data;
+  } catch (error) {
+    errorBarbeiros.value = "Não foi possível carregar os barbeiros.";
+  } finally {
+    isLoadingBarbeiros.value = false;
   }
 };
 
@@ -142,6 +173,8 @@ onMounted(fetchAllServicos);
 watch(selected, (newValue) => {
   if (newValue === 'clientes' && clientes.value.length === 0) {
     fetchAllClientes();
+  } else if (newValue === 'barbeiros' && barbeiros.value.length === 0) {
+    fetchAllBarbeiros();
   }
 });
 
@@ -150,36 +183,26 @@ const selectTab = (tab) => {
 };
 
 const handleApiError = (type, error) => {
-  console.error(`Erro ao salvar ${type}:`, error);
   if (error.statusCode === 422 && error.data?.errors) {
-    if (type === 'servico') {
-      validationErrors.value.servico = error.data.errors;
-    } else {
-      validationErrors.value.cliente = error.data.errors;
-    }
+    validationErrors.value[type] = error.data.errors;
   } else {
     alert(`Erro: ${error.message || 'Não foi possível salvar.'}`);
   }
 };
 
-
 const handleServicoSubmit = async () => {
   isSavingServico.value = true;
   validationErrors.value.servico = null;
   let response;
-
   try {
     if (isEditingServico.value) {
       response = await editarServico(formServico.value);
     } else {
       response = await criarServico(formServico.value);
     }
-
     if (response.error) throw response.error;
-
     await fetchAllServicos();
     cancelEditServico();
-
   } catch (error) {
     handleApiError('servico', error);
   } finally {
@@ -206,9 +229,7 @@ const removerServico = async (id) => {
   try {
     const { error } = await excluirServico(id);
     if (error) throw error;
-
     await fetchAllServicos();
-
   } catch (error) {
     handleApiError('servico', error);
   } finally {
@@ -220,19 +241,15 @@ const handleClienteSubmit = async () => {
   isSavingCliente.value = true;
   validationErrors.value.cliente = null;
   let response;
-
   try {
     if (isEditingCliente.value) {
       response = await editarCliente(formCliente.value);
     } else {
       response = await criarCliente(formCliente.value);
     }
-
     if (response.error) throw response.error;
-
     await fetchAllClientes();
     cancelEditCliente();
-
   } catch (error) {
     handleApiError('cliente', error);
   } finally {
@@ -259,14 +276,64 @@ const removerCliente = async (email) => {
   try {
     const { error } = await excluirCliente(email);
     if (error) throw error;
-
     await fetchAllClientes();
-
   } catch (error) {
     handleApiError('cliente', error);
   } finally {
     isSavingCliente.value = false;
   }
+};
+
+const handleBarbeiroSubmit = async () => {
+  isSavingBarbeiro.value = true;
+  validationErrors.value.barbeiro = null;
+  let response;
+  try {
+    if (isEditingBarbeiro.value) {
+      response = await editarBarbeiro(formBarbeiro.value);
+    } else {
+      response = await criarBarbeiro(formBarbeiro.value);
+    }
+    if (response.error) throw response.error;
+    await fetchAllBarbeiros();
+    cancelEditBarbeiro();
+  } catch (error) {
+    handleApiError('barbeiro', error);
+  } finally {
+    isSavingBarbeiro.value = false;
+  }
+};
+
+const editBarbeiro = (barbeiro) => {
+  formBarbeiro.value = { ...barbeiro };
+  isEditingBarbeiro.value = true;
+  window.scrollTo(0, 0);
+};
+
+const cancelEditBarbeiro = () => {
+  formBarbeiro.value = { nome: '', email: '', telefone: '' };
+  isEditingBarbeiro.value = false;
+  validationErrors.value.barbeiro = null;
+};
+
+const removerBarbeiro = async (email) => {
+  if (!confirm('Tem certeza que deseja excluir este barbeiro?')) return;
+
+  isSavingBarbeiro.value = true;
+  try {
+    const { error } = await excluirBarbeiro(email);
+    if (error) throw error;
+    await fetchAllBarbeiros();
+  } catch (error) {
+    handleApiError('barbeiro', error);
+  } finally {
+    isSavingBarbeiro.value = false;
+  }
+};
+
+const logout = () => {
+  localStorage.removeItem('tokenAdmin');
+  window.location.href = '/login';
 };
 </script>
 
@@ -341,7 +408,6 @@ li {
   margin-bottom: 10px;
 }
 
-/* MELHORIA: Estilos para erros */
 .error-list {
   color: #ff6b6b;
   background: #2b1c1c;

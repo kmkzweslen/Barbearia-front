@@ -10,18 +10,37 @@
 </template>
 
 <script>
+import { api } from '@/utils/api';
+
 export default {
   name: 'Login',
   data() {
     return {
       user: '',
       password: '',
+      errorMessage: ''
     };
   },
   methods: {
-    login() {
-      alert(`Usuário ${this.user} tentou logar.`);
-      this.$router.push('/admin');  // redireciona para painel após login
+    async login() {
+      this.errorMessage = '';
+      try {
+        const data = await api('/admin/auth/login', {
+          method: 'POST',
+          body: {
+            username: this.user,
+            password: this.password
+          }
+        });
+        if (data && data.token) {
+          localStorage.setItem('tokenAdmin', data.token);
+          this.$router.push('/admin');
+        } else {
+          this.errorMessage = 'Usuário ou senha inválidos.';
+        }
+      } catch (error) {
+        this.errorMessage = 'Erro ao autenticar. Verifique os dados.';
+      }
     }
   }
 };
@@ -60,5 +79,11 @@ input {
 
 .btn:hover {
   background-color: #e68a00;
+}
+
+.error {
+  margin-top: 10px;
+  color: #ff4444;
+  font-weight: bold;
 }
 </style>

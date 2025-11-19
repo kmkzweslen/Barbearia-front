@@ -3,6 +3,16 @@ import { ofetch } from 'ofetch'
 export const api = ofetch.create({
     baseURL: 'https://barbearia-backend-x0st.onrender.com/api',
 
+    async onRequest({ options }) {
+    const token = localStorage.getItem('tokenAdmin');
+    if (token) {
+      options.headers = {
+        ...options.headers,
+        Authorization: `Bearer ${token}`
+      };
+    }
+  },
+
     async onResponseError({ response }) {
         console.error('Erro na requisição API:', response._data)
 

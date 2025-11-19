@@ -1,5 +1,6 @@
-import { api } from '@/utils/api' 
+import { api } from '@/utils/api';
 
+// Função para adaptar o objeto do backend para o frontend
 const mapBackendToFrontend = (servico) => {
   if (!servico) return null;
   return {
@@ -10,6 +11,7 @@ const mapBackendToFrontend = (servico) => {
   };
 };
 
+// Função para adaptar o objeto do frontend para o backend
 const mapFrontendToBackend = (servico) => {
   if (!servico) return null;
   return {
@@ -21,40 +23,38 @@ const mapFrontendToBackend = (servico) => {
 };
 
 export function useApiServicos() {
-  
+
   const buscarTodosServicos = async () => {
     try {
-      const data = await api('/buscarTodosServicos', {
+      const data = await api('/servico/buscarTodosServicos', {
         method: 'GET'
       });
-      
       if (data && Array.isArray(data)) {
         const dadosMapeados = data.map(mapBackendToFrontend);
         return { data: dadosMapeados, error: null };
       }
       return { data: [], error: null };
-
     } catch (err) {
       console.error("Erro no composable (buscarTodosServicos):", err);
-      return { data: null, error: err }; 
+      return { data: null, error: err };
     }
   };
-  
+
   const buscarServico = async (id) => {
-     try {
-        const data = await api('/buscarServico', {
-            method: 'GET',
-            params: { id: id }
-        });
-        return { data: mapBackendToFrontend(data), error: null };
-     } catch (err) {
-        return { data: null, error: err };
-     }
+    try {
+      const data = await api('/servico/buscarServico', {
+        method: 'GET',
+        params: { servicoId: id }
+      });
+      return { data: mapBackendToFrontend(data), error: null };
+    } catch (err) {
+      return { data: null, error: err };
+    }
   };
 
   const criarServico = async (dadosServicoFrontend) => {
     try {
-      const data = await api('/criarServico', {
+      const data = await api('/servico/criarServico', {
         method: 'POST',
         body: dadosServicoFrontend
       });
@@ -63,10 +63,11 @@ export function useApiServicos() {
       return { data: null, error: err };
     }
   };
+
   const editarServico = async (servicoFrontend) => {
     try {
       const dadosParaBackend = mapFrontendToBackend(servicoFrontend);
-      const data = await api('/atualizarServico', {
+      const data = await api('/servico/atualizarServico', {
         method: 'PUT',
         body: dadosParaBackend
       });
@@ -78,7 +79,7 @@ export function useApiServicos() {
 
   const excluirServico = async (idFrontend) => {
     try {
-      await api('/deletarServico', {
+      await api('/servico/deletarServico', {
         method: 'DELETE',
         params: { servicoId: idFrontend }
       });
