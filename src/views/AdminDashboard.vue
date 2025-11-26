@@ -86,6 +86,10 @@
         </li>
       </ul>
     </div>
+
+    <div>
+      <Agendamentos role="AMD"/>
+    </div>
   </section>
 </template>
 
@@ -94,6 +98,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useApiServicos } from '@/composables/useApiServicos';
 import { useApiClientes } from '@/composables/useApiClientes';
 import { useApiBarbeiros } from '@/composables/useApiBarbeiro';
+import  Agendamentos  from '@/components/Agendamentos.vue';
 
 const { buscarTodosServicos, criarServico, editarServico, excluirServico } = useApiServicos();
 const { buscarTodosClientes, criarCliente, editarCliente, excluirCliente } = useApiClientes();
