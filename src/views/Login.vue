@@ -89,7 +89,7 @@ export default {
             otp: this.otp
           }
         });
-        if (data && data.token && data.valid) {
+        if (data && data.token) {
           localStorage.setItem('tokenCliente', data.token);
           this.$router.push('/cliente');
         } else {
