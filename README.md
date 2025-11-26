@@ -1,5 +1,53 @@
 # Vue 3 + Vite
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+#Barbearia Frontend#
+Frontend da aplicação de gerenciamento para barbearia, com interface para clientes, barbeiros e administradores.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+#Sobre#
+Este projeto é a interface web para o sistema de barbearia que permite agendamento de serviços, gerenciamento de usuários e visualização dos serviços oferecidos, com foco em uma experiência responsiva e fácil para todos os perfis de usuário.
+
+#Tecnologias#
+Vue.js (Options API)
+
+Vue Router
+
+Axios para requisições HTTP
+
+CSS3 / SCSS para estilos
+
+JavaScript ES6+
+
+#Como executar#
+Clinar repositório 
+'''
+git clone https://github.com/kmkzweslen/Barberaia-front.git
+'''
+Acesar pasta
+'''
+cd Barberaia-front
+'''
+Instalar dependências 
+'''
+npm install
+'''
+Rodar servidor
+'''
+npm run serve
+'''
+#Funcionalidades#
+Registro e login de clientes, barbeiros e admins
+
+Visualização e agendamento de serviços
+
+Tela administrativa para gerenciamento de barbeiros, serviços e agendamentos
+
+#Estrutura do projeto#
+src/components - Componentes Vue reutilizáveis
+
+src/views - Páginas do sistema
+
+src/router - Configuração das rotas
+
+src/services - Comunicação com a API backend
+
+public - Arquivos estáticos
