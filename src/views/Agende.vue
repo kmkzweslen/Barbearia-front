@@ -2,40 +2,35 @@
   <section class="agendamento">
     <h1>Novo Agendamento</h1>
     <form @submit.prevent="criarAgendamento">
-      <label>
-        Serviço
-        <select v-model="servicoId" required>
-          <option value="" disabled>Selecione um serviço</option>
-          <option v-for="servico in servicos" :key="servico.id" :value="servico.id">
-            {{ servico.nome }} - R$ {{ servico.preco }}
-          </option>
-        </select>
-      </label>
-
-      <label>
-        Barbeiro
-        <select v-model="barbeiroEmail" required>
-          <option value="" disabled>Selecione um barbeiro</option>
-          <option v-for="barbeiro in barbeiros" :key="barbeiro.email" :value="barbeiro.email">
-            {{ barbeiro.nome }} - {{ barbeiro.especialidade }}
-          </option>
-        </select>
-      </label>
-
-      <label>
-        Data
-        <input type="date" v-model="data" required />
-      </label>
-
-      <label>
-        Hora
-        <input type="time" v-model="hora" required />
-      </label>
-
-      <button type="submit" class="btn" :disabled="loading">
-        <span v-if="loading">Salvando...</span>
-        <span v-else>Agendar</span>
-      </button>
+      <div class="form-content">
+        <label>
+          Serviço
+          <select v-model="servicoId" required>
+            <option value="" disabled>Selecione um serviço</option>
+            <option v-for="servico in servicos" :key="servico.id" :value="servico.id">
+              {{ servico.nome }} - R$ {{ servico.preco }}
+            </option>
+          </select>
+        </label>
+        <label>
+          Barbeiro
+          <select v-model="barbeiroEmail" required>
+            <option value="" disabled>Selecione um barbeiro</option>
+            <option v-for="barbeiro in barbeiros" :key="barbeiro.email" :value="barbeiro.email">
+              {{ barbeiro.nome }} - {{ barbeiro.especialidade }}
+            </option>
+          </select>
+        </label>
+        <label>
+          Data
+          <input type="date" v-model="data" required />
+        </label>
+        <label>
+          Hora
+          <input type="time" v-model="hora" required />
+        </label>
+      </div>
+      <button type="submit" class="btn">Agendar</button>
     </form>
     <p v-if="successMessage" class="success">{{ successMessage }}</p>
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -58,7 +53,6 @@ const successMessage = ref('')
 const errorMessage = ref('')
 const loading = ref(false)
 
-// Carregamento dos dados da API ao montar componente
 onMounted(async () => {
   await carregarServicos()
   await carregarBarbeiros()
@@ -133,6 +127,13 @@ async function criarAgendamento() {
 </script>
 
 <style scoped>
+.form-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
 .agendamento {
   padding: 20px;
   background-color: #111;
@@ -140,7 +141,9 @@ async function criarAgendamento() {
   font-family: Arial, sans-serif;
 }
 label {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 12px;
 }
 select,
