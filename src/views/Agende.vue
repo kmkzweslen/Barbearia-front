@@ -1,7 +1,7 @@
 <template>
   <section class="agendamento">
     <h1>Novo Agendamento</h1>
-    <form @submit.prevent="validarCampos">
+    <form @submit.prevent="criarAgendamento">
       <label>
         Serviço
         <select v-model="servicoId" required>
@@ -29,6 +29,7 @@
         <input type="time" required />
       </label>
       <button type="submit" class="btn">Agendar</button>
+      <p v-if="successMessage" class="success">{{ successMessage }}</p>
       <p v-if="errorMessage" class="ërror">{{ errorMessage }}</p>
     </form>
   </section>
@@ -52,12 +53,41 @@ onMounted(async () => {
   barbeiros.value = await api('/barbeiro/buscarTodosBarbeiros', { method: 'GET' })
 })
 
-function validarCampus() {
+function validarCampos() {
   if (!servicoId.value || !barbeiroEmail.value || !data.value || !hora.value) {
     errorMessage.value = 'Todos os campus são obrigatórios!'
     return false
   }
   return true
+}
+
+async function criarAgendamento() {
+  errorMessage.value = ''
+  if (!validarCampos()) return
+
+  const token = localStorage.getItem('tokenCliente')
+  if (!token) {
+    errorMessage.value = 'Faça login como cliente antes de agendar.'
+    return
+  }
+
+  const payload = {
+    servicoId: servicoId.value,
+    barbeiroEmail: barbeiroEmail.value,
+    data: data.value,
+    hora: hora.value
+  }
+
+  const response = await api('/agendamento/criarAgendamento', {
+    method: 'POST',
+    body: payload,
+    auth: `Baerer ${token}`
+  })
+  if (response?.statusCode === '201') {
+    successMessage.value = 'Agendamento criado com sucesso!'
+  } else {
+    errorMessage.value = response?.statusMsg || 'Falha ao criar agendamento.'
+  }
 }
 </script>
 
