@@ -4,11 +4,21 @@
     <form>
       <label>
         Serviço
-        <select required></select>
+        <select v-model="servicoId" required>
+          <option value="" disable>Selecione um serviço</option>
+          <option v-for="servico in servicos" :key="servico.id" :value="servico.id">
+            {{ servico.nome }} - R$ {{ servico.preco }}
+          </option>
+        </select>
       </label>
       <label>
         Barbeiro
-        <select required></select>
+        <select v-model="barbeiroEmail" required>
+          <option value="" disable>Selecione um barbeiro</option>
+          <option v-for="barbeiro in barbeiros" :key="barbeiro.email" :value="barbeiro.email">
+            {{ barbeiro.nome }}
+          </option>
+        </select>
       </label>
       <label>
         Data
@@ -22,9 +32,20 @@
     </form>
   </section>
 </template>
+
 <script setup>
-// Ainda sem lógica
+import { ref, onMounted } from 'vue'
+import { api } from '@/utils/api'
+
+const servicos = ref([])
+const barbeiros = ref([])
+
+onMounted(async () => {
+  servicos.value = await api('/servico/buscarTodosServicos', { method: 'GET' })
+  barbeiros.value = await api('/barbeiro/buscarTodosBarbeiros', { method: 'GET' })
+})
 </script>
+
 <style scoped>
 .agendamento {
   padding: 20px;
