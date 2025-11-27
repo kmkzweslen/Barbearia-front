@@ -91,6 +91,7 @@ export default {
         });
         if (data && data.token) {
           localStorage.setItem('tokenCliente', data.token);
+          localStorage.setItem('emailCliente', this.emailCliente);
           this.$router.push('/cliente');
         } else {
           this.errorMessage = 'Código inválido ou expirado.';

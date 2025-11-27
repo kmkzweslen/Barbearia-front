@@ -7,31 +7,39 @@
           Serviço
           <select v-model="servicoId" required>
             <option value="" disabled>Selecione um serviço</option>
-            <option v-for="servico in servicos" :key="servico.id" :value="servico.id">
+            <option v-for="servico in servicos" :key="servico.servicoId" :value="servico.servicoId">
               {{ servico.nome }} - R$ {{ servico.preco }}
             </option>
           </select>
         </label>
+
         <label>
           Barbeiro
           <select v-model="barbeiroEmail" required>
             <option value="" disabled>Selecione um barbeiro</option>
             <option v-for="barbeiro in barbeiros" :key="barbeiro.email" :value="barbeiro.email">
-              {{ barbeiro.nome }} - {{ barbeiro.especialidade }}
+              {{ barbeiro.nome }} - {{ barbeiro.telefone }}
             </option>
           </select>
         </label>
+
         <label>
           Data
           <input type="date" v-model="data" required />
         </label>
+
         <label>
           Hora
           <input type="time" v-model="hora" required />
         </label>
       </div>
-      <button type="submit" class="btn">Agendar</button>
+
+      <button type="submit" class="btn" :disabled="loading">
+        <span v-if="loading">Salvando...</span>
+        <span v-else>Agendar</span>
+      </button>
     </form>
+
     <p v-if="successMessage" class="success">{{ successMessage }}</p>
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
   </section>
@@ -53,6 +61,8 @@ const successMessage = ref('')
 const errorMessage = ref('')
 const loading = ref(false)
 
+const clienteEmail = ref(localStorage.getItem('emailCliente') || '')
+
 onMounted(async () => {
   await carregarServicos()
   await carregarBarbeiros()
@@ -60,25 +70,35 @@ onMounted(async () => {
 
 async function carregarServicos() {
   try {
-    const data = await api('/servico/buscarTodosServicos', { method: 'GET' })
-    servicos.value = data || []
-  } catch (e) {
+    const resp = await api('/servico/buscarTodosServicos', { method: 'GET' })
+    console.log('SERVICOS API:', resp)
+    servicos.value = resp || []
+  } catch {
     errorMessage.value = 'Erro ao carregar serviços.'
   }
 }
 
 async function carregarBarbeiros() {
   try {
-    const data = await api('/barbeiro/buscarTodosBarbeiros', { method: 'GET' })
-    barbeiros.value = data || []
-  } catch (e) {
+    const resp = await api('/barbeiro/buscarTodosBarbeiros', { method: 'GET' })
+    barbeiros.value = resp || []
+  } catch {
     errorMessage.value = 'Erro ao carregar barbeiros.'
   }
 }
 
 function validarCampos() {
+  console.log('servicoId =>', servicoId.value)
+  console.log('barbeiroEmail =>', barbeiroEmail.value)
+  console.log('data =>', data.value)
+  console.log('hora =>', hora.value)
+
   if (!servicoId.value || !barbeiroEmail.value || !data.value || !hora.value) {
     errorMessage.value = 'Todos os campos são obrigatórios.'
+    return false
+  }
+  if (!clienteEmail.value) {
+    errorMessage.value = 'Cliente não identificado. Faça login como cliente antes de agendar.'
     return false
   }
   return true
@@ -87,39 +107,39 @@ function validarCampos() {
 async function criarAgendamento() {
   errorMessage.value = ''
   successMessage.value = ''
+
   if (!validarCampos()) return
 
-  const token = localStorage.getItem('tokenCliente')
-  if (!token) {
-    errorMessage.value = 'Faça login como cliente antes de agendar.'
-    return
+  loading.value = true
+  const horario = `${data.value}T${hora.value}:00`
+
+  const payload = {
+    servicoId: Number(servicoId.value),
+    barbeiroEmail: barbeiroEmail.value,
+    clienteEmail: clienteEmail.value,
+    horario,
+    status: "PENDENTE"
   }
 
-  loading.value = true
+  console.log('PAYLOAD AGENDAMENTO:', payload)
+
   try {
-    const payload = {
-      servicoId: servicoId.value,
-      barbeiroEmail: barbeiroEmail.value,
-      data: data.value,
-      hora: hora.value
-    }
-    const response = await api('/agendamento/criarAgendamento', {
+    const resp = await api('/agendamento/criarAgendamento', {
       method: 'POST',
-      body: payload,
-      auth: `Bearer ${token}` // Adapte à sua util/function que injeta o header "Authorization"
+      body: payload
     })
-    if (response?.statusCode === '201') {
+
+    if (resp?.statusCode === '201') {
       successMessage.value = 'Agendamento criado com sucesso!'
-      // Reseta formulário após sucesso
       servicoId.value = ''
       barbeiroEmail.value = ''
       data.value = ''
       hora.value = ''
     } else {
-      errorMessage.value = response?.statusMsg || 'Falha ao criar agendamento.'
+      errorMessage.value = resp?.statusMsg || 'Falha ao criar agendamento.'
     }
-  } catch (e) {
-    errorMessage.value = 'Erro ao criar agendamento. Tente novamente.'
+  } catch {
+    errorMessage.value = 'Erro ao criar agendamento.'
   } finally {
     loading.value = false
   }
@@ -127,6 +147,14 @@ async function criarAgendamento() {
 </script>
 
 <style scoped>
+.agendamento {
+  padding: 20px;
+  background-color: #111;
+  color: #eee;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
 .form-content {
   display: flex;
   flex-direction: column;
@@ -134,22 +162,17 @@ async function criarAgendamento() {
   gap: 18px;
   margin-bottom: 18px;
 }
-.agendamento {
-  padding: 20px;
-  background-color: #111;
-  color: #eee;
-  font-family: Arial, sans-serif;
-}
+
 label {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 12px;
 }
+
 select,
 input[type="date"],
 input[type="time"] {
-  display: block;
   margin-top: 4px;
   padding: 8px;
   width: 250px;
@@ -158,6 +181,7 @@ input[type="time"] {
   background-color: #222;
   color: #fff;
 }
+
 .btn {
   margin-top: 10px;
   background-color: #f90;
@@ -168,17 +192,21 @@ input[type="time"] {
   font-weight: bold;
   border-radius: 5px;
 }
+
 .btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
+
 .btn:hover:enabled {
   background-color: #e68a00;
 }
+
 .success {
   margin-top: 10px;
   color: #5ac95a;
 }
+
 .error {
   margin-top: 10px;
   color: #ff4444;
