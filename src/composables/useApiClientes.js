@@ -63,11 +63,24 @@ export function useApiClientes() {
     }
   };
 
+  const loginComSenha = async (email, password) => {
+    try {
+      const data = await api('/cliente/auth/login-senha', {
+        method: 'POST',
+        body: { email, password }
+      });
+      return { data, error: null };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  };
+
   return {
     criarCliente,
     editarCliente,
     excluirCliente,
     buscarCliente,
-    buscarTodosClientes
+    buscarTodosClientes,
+    loginComSenha
   };
 }
