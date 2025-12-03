@@ -178,7 +178,7 @@ input {
 }
 
 .btn {
-  background-color: #f90;
+  background-color: #e63946;
   color: #222;
   border: none;
   padding: 10px 20px;
@@ -188,7 +188,7 @@ input {
 }
 
 .btn:hover {
-  background-color: #e68a00;
+  background-color: #ff6c78;
 }
 
 .error {
@@ -212,7 +212,7 @@ input {
   cursor: pointer;
 }
 .tabs .active {
-  border-bottom: 3px solid #f90;
+  border-bottom: 3px solid #e63946;
 }
 .success {
   color: #5ac95a;
@@ -239,7 +239,7 @@ input {
 }
 
 .login-method-tabs .active {
-  background: #f90;
+  background: #e63946;
   color: #222;
   font-weight: bold;
 }
@@ -251,7 +251,7 @@ input {
 }
 
 .link {
-  color: #f90;
+  color: #e63946;
   text-decoration: none;
   font-weight: bold;
 }

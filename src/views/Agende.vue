@@ -418,7 +418,7 @@ function formatDateDisplay(dateISO) {
   text-align: center;
   margin-bottom: 32px;
   font-size: 28px;
-  color: #f90;
+  color: #e63946;
 }
 
 .progress-bar {
@@ -488,7 +488,7 @@ function formatDateDisplay(dateISO) {
   text-align: center;
   padding: 40px;
   font-size: 18px;
-  color: #f90;
+  color: #e63946;
 }
 
 .step-content {
@@ -509,7 +509,7 @@ function formatDateDisplay(dateISO) {
 .step-title {
   font-size: 22px;
   margin-bottom: 24px;
-  color: #f90;
+  color: #e63946;
   text-align: center;
 }
 
@@ -531,14 +531,14 @@ function formatDateDisplay(dateISO) {
 
 .service-card:hover {
   transform: translateY(-4px);
-  border-color: #f90;
+  border-color: #e63946;
 }
 
 .service-icon {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: #f90;
+  background-color: #e63946;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -555,7 +555,7 @@ function formatDateDisplay(dateISO) {
 .service-price {
   font-size: 20px;
   font-weight: bold;
-  color: #f90;
+  color: #e63946;
   margin: 0;
 }
 
@@ -580,7 +580,7 @@ function formatDateDisplay(dateISO) {
 
 .barbeiro-card:hover {
   transform: translateY(-4px);
-  border-color: #f90;
+  border-color: #e63946;
 }
 
 .barbeiro-icon {
@@ -592,7 +592,7 @@ function formatDateDisplay(dateISO) {
   align-items: center;
   justify-content: center;
   margin: 0 auto 12px;
-  color: #f90;
+  color: #e63946;
 }
 
 .barbeiro-name {
@@ -625,14 +625,14 @@ function formatDateDisplay(dateISO) {
 
 .date-card:hover {
   transform: scale(1.05);
-  border-color: #f90;
+  border-color: #e63946;
 }
 
 .date-card.selected {
-  background-color: #f90;
+  background-color: #e63946;
   color: #000;
   font-weight: bold;
-  border-color: #f90;
+  border-color: #e63946;
 }
 
 .date-dia {
@@ -653,7 +653,7 @@ function formatDateDisplay(dateISO) {
 .periodo-title {
   font-size: 18px;
   margin-bottom: 16px;
-  color: #f90;
+  color: #e63946;
 }
 
 .horario-grid {
@@ -675,20 +675,20 @@ function formatDateDisplay(dateISO) {
 }
 
 .horario-btn:hover {
-  border-color: #f90;
+  border-color: #e63946;
   transform: scale(1.05);
 }
 
 .horario-btn.selected {
-  background-color: #f90;
+  background-color: #e63946;
   color: #000;
   font-weight: bold;
-  border-color: #f90;
+  border-color: #e63946;
 }
 
 .confirmar-btn {
   width: 100%;
-  background-color: #f90;
+  background-color: #e63946;
   color: #000;
   border: none;
   padding: 16px;
@@ -701,7 +701,7 @@ function formatDateDisplay(dateISO) {
 }
 
 .confirmar-btn:hover:not(:disabled) {
-  background-color: #e68a00;
+  background-color: #ff6c78;
   transform: scale(1.02);
 }
 
