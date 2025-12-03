@@ -27,28 +27,7 @@
 
       <!-- Histórico de Atendimentos -->
       <div class="historico-section">
-        <h3>Histórico de Atendimentos</h3>
-        
-        <div v-if="historico.length > 0" class="historico-list">
-          <div v-for="item in historico" :key="item.id" class="historico-item">
-            <div class="historico-header">
-              <span class="data">{{ formatarData(item.data) }}</span>
-              <span class="status" :class="item.status">{{ item.status }}</span>
-            </div>
-            <div class="historico-body">
-              <p class="servico">{{ item.servico }}</p>
-              <p class="barbeiro">Barbeiro: {{ item.barbeiro }}</p>
-              <p class="preco">R$ {{ item.preco?.toFixed(2) }}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div v-else class="empty-state">
-          <p>Você ainda não possui atendimentos registrados.</p>
-          <button @click="$router.push('/agende')" class="btn-agendar">
-            Agendar Primeiro Serviço
-          </button>
-        </div>
+        <AgendamentosList role="CLIENTE" :email="clienteData?.email || ''" />
       </div>
 
       <!-- Botão Sair -->
@@ -69,27 +48,24 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import { useApiClientes } from '@/composables/useApiClientes';
+import AgendamentosList from '@/components/AgendamentosList.vue';
 
 export default {
   name: 'ClientePerfil',
+  components: {
+    AgendamentosList
+  },
   setup() {
     const router = useRouter();
     const { logout, getCurrentUser } = useAuth();
     const { buscarCliente } = useApiClientes();
     
     const clienteData = ref(null);
-    const historico = ref([]);
     
     const handleLogout = () => {
       if (confirm('Deseja realmente sair?')) {
         logout();
       }
-    };
-    
-    const formatarData = (dataString) => {
-      if (!dataString) return '';
-      const data = new Date(dataString);
-      return data.toLocaleDateString('pt-BR');
     };
     
     const loadClienteData = async () => {
@@ -102,23 +78,6 @@ export default {
       }
     };
     
-    const loadHistorico = async () => {
-      // Simulação de histórico - substituir pela chamada real da API quando disponível
-      // const { data } = await api('/cliente/historico', { method: 'GET' });
-      
-      // Dados de exemplo
-      historico.value = [
-        // {
-        //   id: 1,
-        //   data: '2024-11-15',
-        //   servico: 'Corte Masculino',
-        //   barbeiro: 'Carlos Silva',
-        //   preco: 35.00,
-        //   status: 'Concluído'
-        // }
-      ];
-    };
-    
     onMounted(() => {
       const tokenCliente = localStorage.getItem('tokenCliente');
       if (!tokenCliente) {
@@ -127,14 +86,11 @@ export default {
       }
       
       loadClienteData();
-      loadHistorico();
     });
     
     return {
       clienteData,
-      historico,
-      handleLogout,
-      formatarData
+      handleLogout
     };
   }
 };
@@ -148,7 +104,7 @@ export default {
 }
 
 .perfil-container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -204,121 +160,15 @@ h3 {
   font-size: 1.05rem;
 }
 
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
 /* Histórico Section */
 .historico-section {
-  background: #1a1a1a;
-  padding: 30px;
-  border-radius: 12px;
   margin-bottom: 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-.historico-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.historico-item {
-  background: #222;
-  padding: 20px;
-  border-radius: 8px;
-  border-left: 4px solid #457b9d;
-  transition: all 0.3s ease;
-}
-
-.historico-item:hover {
-  transform: translateX(5px);
-  box-shadow: 0 5px 20px rgba(69, 123, 157, 0.3);
-}
-
-.historico-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #333;
-}
-
-.data {
-  color: #ccc;
-  font-size: 0.9rem;
-}
-
-.status {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.status.Concluído {
-  background: #2a9d8f;
-  color: #fff;
-}
-
-.status.Agendado {
-  background: #e9c46a;
-  color: #000;
-}
-
-.status.Cancelado {
-  background: #e63946;
-  color: #fff;
-}
-
-.historico-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.servico {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.barbeiro {
-  color: #ccc;
-  font-size: 0.95rem;
-}
-
-.preco {
-  color: #e63946;
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #999;
-}
-
-.empty-state p {
-  margin-bottom: 30px;
-  font-size: 1.1rem;
-}
-
-.btn-agendar {
-  background: linear-gradient(135deg, #e63946, #c1121f);
-  color: #fff;
-  border: none;
-  padding: 12px 30px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 1px;
-}
-
-.btn-agendar:hover {
-  background: linear-gradient(135deg, #c1121f, #9d0208);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(230, 57, 70, 0.4);
 }
 
 /* Actions */
@@ -327,19 +177,18 @@ h3 {
 }
 
 .btn-logout {
-  background: transparent;
-  border: 2px solid #e63946;
-  color: #e63946;
-  padding: 12px 40px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  letter-spacing: 1px;
+  background: transparent;
+  border: 2px solid #e63946;
+  color: #e63946;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .btn-logout svg {
@@ -351,13 +200,7 @@ h3 {
   background: #e63946;
   color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(230, 57, 70, 0.4);
-}
-
-.loading {
-  text-align: center;
-  padding: 40px;
-  color: #999;
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
 }
 
 @media (max-width: 768px) {
@@ -365,16 +208,14 @@ h3 {
     font-size: 2rem;
   }
   
+  .dados-section {
+    padding: 20px;
+  }
+  
   .dado-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-  }
-  
-  .historico-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
   }
 }
 </style>

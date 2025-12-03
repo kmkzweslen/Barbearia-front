@@ -12,6 +12,7 @@
         <li v-if="!isAuthenticated"><router-link to="/login">LOGIN</router-link></li>
         <li v-if="isCliente"><router-link to="/cliente">PERFIL</router-link></li>
         <li v-if="isAdmin"><router-link to="/admin">ADMIN</router-link></li>
+        <li v-if="isAdmin"><router-link to="/admin/agendamentos">AGENDAMENTOS</router-link></li>
         <li><router-link to="/agende">AGENDE</router-link></li>
         <li v-if="isAuthenticated">
           <button @click="handleLogout" class="logout-btn">SAIR</button>

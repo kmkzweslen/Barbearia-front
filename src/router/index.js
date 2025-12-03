@@ -4,6 +4,7 @@ import Home from '../views/Home.vue';
 import Agende from '../views/Agende.vue';
 import Login from '../views/Login.vue';
 import AdminDashboard from '../views/AdminDashboard.vue';
+import AgendamentosAdmin from '../views/AgendamentosAdmin.vue';
 import ClientePerfil from '../views/ClientePerfil.vue';
 import Cadastro from '../views/Cadastro.vue';
 
@@ -13,6 +14,7 @@ const routes = [
   { path: '/login', name: 'login', component: Login },
   { path: '/cadastro', name: 'cadastro', component: Cadastro },
   { path: '/admin', name: 'admin', component: AdminDashboard, meta: { requiresAdmin: true } },
+  { path: '/admin/agendamentos', name: 'adminAgendamentos', component: AgendamentosAdmin, meta: { requiresAdmin: true } },
   { path: '/cliente', name: 'cliente', component: ClientePerfil, meta: { requiresCliente: true } },
 ];
 
