@@ -368,7 +368,6 @@ export default {
   transition: all 0.3s ease;
   letter-spacing: 0.5px;
 }
-
 .tab.active {
   background: linear-gradient(135deg, #e63946, #c1121f);
   color: #fff;
@@ -467,17 +466,6 @@ export default {
 }
 
 .btn-submit:hover {
-  background: linear-gradient(135deg, #c1121f, #9d0208);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(230, 57, 70, 0.4);
-}
-
-.signup-link {
-  text-align: center;
-  margin-top: 20px;
-  color: #999;
-  font-size: 0.9rem;
-}
 
 .link {
   color: #e63946;
