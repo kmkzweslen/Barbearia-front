@@ -1,5 +1,9 @@
 import { api } from '@/utils/api';
 
+// Cache para serviços e barbeiros (evita múltiplas requisições)
+let servicosCache = null;
+let barbeirosCache = null;
+
 // Funções auxiliares para formatação
 const formatarData = (horarioISO) => {
     if (!horarioISO) return 'N/A';
@@ -13,15 +17,55 @@ const formatarHora = (horarioISO) => {
     return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 };
 
+// Buscar serviços (com cache)
+const buscarServicosParaLookup = async () => {
+    if (servicosCache) return servicosCache;
+    try {
+        const data = await api('/servico/buscarTodosServicos', { method: 'GET' });
+        servicosCache = data || [];
+        return servicosCache;
+    } catch (err) {
+        console.error('Erro ao buscar serviços para lookup:', err);
+        return [];
+    }
+};
+
+// Buscar barbeiros (com cache)
+const buscarBarbeirosParaLookup = async () => {
+    if (barbeirosCache) return barbeirosCache;
+    try {
+        const data = await api('/barbeiro/buscarTodosBarbeiros', { method: 'GET' });
+        barbeirosCache = data || [];
+        return barbeirosCache;
+    } catch (err) {
+        console.error('Erro ao buscar barbeiros para lookup:', err);
+        return [];
+    }
+};
+
 // Mapeia dados do backend para o frontend
-const mapBackendToFrontend = (agendamento) => {
+const mapBackendToFrontend = (agendamento, servicos = [], barbeiros = []) => {
     if (!agendamento) return null;
+
+    // Buscar nome do serviço pelo ID (backend usa servicoId)
+    let servicoNome = agendamento.servico?.nome || agendamento.servicoNome || 'N/A';
+    if (servicoNome === 'N/A' && agendamento.servicoId) {
+        const servico = servicos.find(s => s.servicoId === agendamento.servicoId || s.id === agendamento.servicoId);
+        if (servico) servicoNome = servico.nome;
+    }
+
+    // Buscar nome do barbeiro pelo email
+    let barbeiroNome = agendamento.barbeiro?.nome || agendamento.barbeiroNome || 'N/A';
+    if (barbeiroNome === 'N/A' && agendamento.barbeiroEmail) {
+        const barbeiro = barbeiros.find(b => b.email === agendamento.barbeiroEmail);
+        if (barbeiro) barbeiroNome = barbeiro.nome;
+    }
 
     return {
         id: agendamento.id,
-        servico: agendamento.servico?.nome || agendamento.servicoNome || 'N/A',
+        servico: servicoNome,
         servicoId: agendamento.servico?.id || agendamento.servicoId,
-        barbeiro: agendamento.barbeiro?.nome || agendamento.barbeiroNome || 'N/A',
+        barbeiro: barbeiroNome,
         barbeiroEmail: agendamento.barbeiro?.email || agendamento.barbeiroEmail,
         clienteEmail: agendamento.cliente?.email || agendamento.clienteEmail,
         clienteNome: agendamento.cliente?.nome || agendamento.clienteNome,
@@ -32,7 +76,22 @@ const mapBackendToFrontend = (agendamento) => {
     };
 };
 
+// Enriquecer agendamentos com dados de serviços e barbeiros
+const enriquecerAgendamentos = async (agendamentos) => {
+    const [servicos, barbeiros] = await Promise.all([
+        buscarServicosParaLookup(),
+        buscarBarbeirosParaLookup()
+    ]);
+    return agendamentos.map(a => mapBackendToFrontend(a, servicos, barbeiros));
+};
+
 export function useApiAgendamentos() {
+
+    // Limpar cache (útil quando dados são atualizados)
+    const limparCache = () => {
+        servicosCache = null;
+        barbeirosCache = null;
+    };
 
     // Buscar todos os agendamentos (Admin)
     const buscarTodosAgendamentos = async () => {
@@ -42,7 +101,7 @@ export function useApiAgendamentos() {
             });
 
             if (data && Array.isArray(data)) {
-                const dadosMapeados = data.map(mapBackendToFrontend);
+                const dadosMapeados = await enriquecerAgendamentos(data);
                 return { data: dadosMapeados, error: null };
             }
             return { data: [], error: null };
@@ -63,7 +122,7 @@ export function useApiAgendamentos() {
             });
 
             if (data && Array.isArray(data)) {
-                const dadosMapeados = data.map(mapBackendToFrontend);
+                const dadosMapeados = await enriquecerAgendamentos(data);
                 return { data: dadosMapeados, error: null };
             }
             return { data: [], error: null };
@@ -82,7 +141,7 @@ export function useApiAgendamentos() {
                         return clienteEmail && clienteEmail.toLowerCase() === email.toLowerCase();
                     });
                     
-                    const dadosMapeados = agendamentosDoCliente.map(mapBackendToFrontend);
+                    const dadosMapeados = await enriquecerAgendamentos(agendamentosDoCliente);
                     return { data: dadosMapeados, error: null };
                 }
                 return { data: [], error: null };
@@ -100,7 +159,11 @@ export function useApiAgendamentos() {
                 method: 'GET',
                 query: { agendamentoId: id }
             });
-            return { data: mapBackendToFrontend(data), error: null };
+            const [servicos, barbeiros] = await Promise.all([
+                buscarServicosParaLookup(),
+                buscarBarbeirosParaLookup()
+            ]);
+            return { data: mapBackendToFrontend(data, servicos, barbeiros), error: null };
         } catch (err) {
             console.error('Erro ao buscar agendamento:', err);
             return { data: null, error: err };
@@ -172,7 +235,7 @@ export function useApiAgendamentos() {
             });
 
             if (data && Array.isArray(data)) {
-                const dadosMapeados = data.map(mapBackendToFrontend);
+                const dadosMapeados = await enriquecerAgendamentos(data);
                 return { data: dadosMapeados, error: null };
             }
             return { data: [], error: null };
@@ -190,6 +253,7 @@ export function useApiAgendamentos() {
         atualizarAgendamento,
         cancelarAgendamento,
         concluirAgendamento,
-        buscarPorIntervaloDeDatas
+        buscarPorIntervaloDeDatas,
+        limparCache
     };
 }
