@@ -87,7 +87,7 @@
             <select v-model="filters.barbeiro">
               <option value="">Todos</option>
               <option v-for="barbeiro in barbeiros" :key="barbeiro.email" :value="barbeiro.email">
-                {{ barbeiro.nome }}
+                {{ barbeiro.nome }} {{ barbeiro.especialidade ? `- ${barbeiro.especialidade}` : '' }}
               </option>
             </select>
           </div>

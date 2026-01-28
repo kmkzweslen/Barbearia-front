@@ -99,6 +99,7 @@
               </svg>
             </div>
             <h3 class="barbeiro-name">{{ barbeiro.nome }}</h3>
+            <p class="barbeiro-especialidade">{{ barbeiro.especialidade || 'Barbeiro Profissional' }}</p>
             <p class="barbeiro-phone">{{ barbeiro.telefone }}</p>
             <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 18l6-6-6-6"/>
@@ -631,6 +632,13 @@ function formatDateDisplay(dateISO) {
   font-size: 16px;
   margin-bottom: 4px;
   color: #fff;
+}
+
+.barbeiro-especialidade {
+  font-size: 14px;
+  color: #e63946;
+  margin: 4px 0;
+  font-weight: 500;
 }
 
 .barbeiro-phone {
