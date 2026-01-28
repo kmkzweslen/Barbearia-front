@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useApiAgendamentos } from '@/composables/useApiAgendamentos';
 
 const props = defineProps({
@@ -115,18 +115,64 @@ const props = defineProps({
   email: {
     type: String,
     default: ''
+  },
+  filtros: {
+    type: Object,
+    default: () => ({
+      status: '',
+      barbeiro: '',
+      dataInicio: '',
+      dataFim: ''
+    })
   }
 });
 
 const { buscarTodosAgendamentos, buscarAgendamentosPorCliente, cancelarAgendamento } = useApiAgendamentos();
 
-const agendamentos = ref([]);
+const todosAgendamentos = ref([]);
 const loading = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
 
 const title = computed(() => {
   return props.role === 'ADM' ? 'Todos os Agendamentos' : 'Meus Agendamentos';
+});
+
+// Agendamentos filtrados
+const agendamentos = computed(() => {
+  let resultado = [...todosAgendamentos.value];
+  
+  // Filtrar por status
+  if (props.filtros.status) {
+    resultado = resultado.filter(a => a.status === props.filtros.status);
+  }
+  
+  // Filtrar por barbeiro
+  if (props.filtros.barbeiro) {
+    resultado = resultado.filter(a => a.barbeiroEmail === props.filtros.barbeiro);
+  }
+  
+  // Filtrar por data inicial
+  if (props.filtros.dataInicio) {
+    const dataInicio = new Date(props.filtros.dataInicio);
+    dataInicio.setHours(0, 0, 0, 0);
+    resultado = resultado.filter(a => {
+      const dataAgendamento = new Date(a.horario);
+      return dataAgendamento >= dataInicio;
+    });
+  }
+  
+  // Filtrar por data final
+  if (props.filtros.dataFim) {
+    const dataFim = new Date(props.filtros.dataFim);
+    dataFim.setHours(23, 59, 59, 999);
+    resultado = resultado.filter(a => {
+      const dataAgendamento = new Date(a.horario);
+      return dataAgendamento <= dataFim;
+    });
+  }
+  
+  return resultado;
 });
 
 async function carregarAgendamentos() {
@@ -150,7 +196,7 @@ async function carregarAgendamentos() {
       errorMessage.value = 'Erro ao carregar agendamentos.';
       console.error(result.error);
     } else {
-      agendamentos.value = result.data || [];
+      todosAgendamentos.value = result.data || [];
     }
   } catch (e) {
     errorMessage.value = 'Erro ao buscar agendamentos.';
@@ -159,6 +205,13 @@ async function carregarAgendamentos() {
     loading.value = false;
   }
 }
+
+// Recarregar quando o email mudar (para o cliente)
+watch(() => props.email, (newEmail) => {
+  if (newEmail && props.role === 'CLIENTE') {
+    carregarAgendamentos();
+  }
+});
 
 function canCancel(agendamento) {
   return agendamento.status !== 'CANCELADO' && agendamento.status !== 'CONCLUIDO';

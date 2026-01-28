@@ -29,7 +29,7 @@ export function useApiBarbeiros() {
     try {
       await api('/barbeiro/deletarBarbeiro', {
         method: 'DELETE',
-        params: { email },
+        query: { email },
       });
       return { success: true, error: null };
     } catch (err) {

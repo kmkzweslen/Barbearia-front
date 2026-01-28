@@ -29,7 +29,7 @@ export function useApiClientes() {
     try {
       await api('/cliente/deletarCliente', {
         method: 'DELETE',
-        params: { email }
+        query: { email }
       });
       return { success: true, error: null };
     } catch (err) {
@@ -41,7 +41,7 @@ export function useApiClientes() {
     try {
       const data = await api('/cliente/buscarCliente', {
         method: 'GET',
-        params: { email }
+        query: { email }
       });
       return { data, error: null };
     } catch (err) {

@@ -15,6 +15,39 @@
     </div>
 
     <div class="dashboard-container">
+      <!-- Quick Access Cards -->
+      <div class="quick-access">
+        <router-link to="/admin/agendamentos" class="quick-card">
+          <div class="quick-icon" style="background: rgba(42, 157, 143, 0.2); color: #2a9d8f;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+          </div>
+          <div class="quick-content">
+            <h3>Agendamentos</h3>
+            <p>Gerencie os agendamentos da barbearia</p>
+          </div>
+          <svg class="quick-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </router-link>
+
+        <router-link to="/admin/financeiro" class="quick-card">
+          <div class="quick-icon" style="background: rgba(234, 179, 8, 0.2); color: #eab308;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="quick-content">
+            <h3>Financeiro</h3>
+            <p>Consultas, despesas e relatórios</p>
+          </div>
+          <svg class="quick-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </router-link>
+      </div>
       <!-- Navigation Tabs -->
       <div class="nav-tabs">
         <button 
@@ -562,6 +595,70 @@ const handleLogout = () => {
   max-width: 1400px;
   margin: 0 auto;
   padding: 30px;
+}
+
+/* Quick Access Cards */
+.quick-access {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.quick-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px 25px;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.quick-card:hover {
+  background: #222;
+  border-color: #e63946;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.quick-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quick-content {
+  flex: 1;
+}
+
+.quick-content h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.quick-content p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.quick-arrow {
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.quick-card:hover .quick-arrow {
+  color: #e63946;
+  transform: translateX(4px);
 }
 
 .nav-tabs {

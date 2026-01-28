@@ -52,11 +52,14 @@ export function useApiAgendamentos() {
         }
     };
 
-    // Buscar agendamentos por cliente
+    // Buscar agendamentos por cliente (usando email)
+    // Tenta primeiro o endpoint com clienteEmail, se falhar usa fallback
     const buscarAgendamentosPorCliente = async (email) => {
         try {
-            const data = await api(`/agendamento/buscarPorCliente?email=${email}`, {
-                method: 'GET'
+            // Tenta o novo endpoint com clienteEmail
+            const data = await api('/agendamento/buscarPorCliente', {
+                method: 'GET',
+                query: { clienteEmail: email }
             });
 
             if (data && Array.isArray(data)) {
@@ -65,16 +68,37 @@ export function useApiAgendamentos() {
             }
             return { data: [], error: null };
         } catch (err) {
-            console.error('Erro ao buscar agendamentos do cliente:', err);
-            return { data: null, error: err };
+            console.log('Endpoint clienteEmail falhou, usando fallback...');
+            
+            // Fallback: busca todos e filtra pelo email
+            try {
+                const allData = await api('/agendamento/buscarTodosAgendamentos', {
+                    method: 'GET'
+                });
+
+                if (allData && Array.isArray(allData)) {
+                    const agendamentosDoCliente = allData.filter(agendamento => {
+                        const clienteEmail = agendamento.cliente?.email || agendamento.clienteEmail;
+                        return clienteEmail && clienteEmail.toLowerCase() === email.toLowerCase();
+                    });
+                    
+                    const dadosMapeados = agendamentosDoCliente.map(mapBackendToFrontend);
+                    return { data: dadosMapeados, error: null };
+                }
+                return { data: [], error: null };
+            } catch (fallbackErr) {
+                console.error('Erro ao buscar agendamentos do cliente:', fallbackErr);
+                return { data: null, error: fallbackErr };
+            }
         }
     };
 
     // Buscar agendamento por ID
     const buscarAgendamentoPorId = async (id) => {
         try {
-            const data = await api(`/agendamento/buscarAgendamento?id=${id}`, {
-                method: 'GET'
+            const data = await api('/agendamento/buscarAgendamento', {
+                method: 'GET',
+                query: { agendamentoId: id }
             });
             return { data: mapBackendToFrontend(data), error: null };
         } catch (err) {
@@ -111,11 +135,12 @@ export function useApiAgendamentos() {
         }
     };
 
-    // Cancelar agendamento
+    // Cancelar agendamento (usa PATCH conforme backend)
     const cancelarAgendamento = async (id) => {
         try {
-            await api(`/agendamento/cancelarAgendamento?id=${id}`, {
-                method: 'DELETE'
+            await api('/agendamento/cancelarAgendamento', {
+                method: 'PATCH',
+                query: { agendamentoId: id }
             });
             return { success: true, error: null };
         } catch (err) {
@@ -124,16 +149,36 @@ export function useApiAgendamentos() {
         }
     };
 
-    // Deletar agendamento
-    const deletarAgendamento = async (id) => {
+    // Concluir agendamento (registra pagamento e histórico)
+    const concluirAgendamento = async (id, formaPagamento) => {
         try {
-            await api(`/agendamento/deletarAgendamento?id=${id}`, {
-                method: 'DELETE'
+            await api('/agendamento/concluirAgendamento', {
+                method: 'PATCH',
+                query: { agendamentoId: id, formaPagamento }
             });
             return { success: true, error: null };
         } catch (err) {
-            console.error('Erro ao deletar agendamento:', err);
+            console.error('Erro ao concluir agendamento:', err);
             return { success: false, error: err };
+        }
+    };
+
+    // Buscar agendamentos por intervalo de datas
+    const buscarPorIntervaloDeDatas = async (inicio, fim) => {
+        try {
+            const data = await api('/agendamento/buscarPorIntervaloDeDatas', {
+                method: 'GET',
+                query: { inicio, fim }
+            });
+
+            if (data && Array.isArray(data)) {
+                const dadosMapeados = data.map(mapBackendToFrontend);
+                return { data: dadosMapeados, error: null };
+            }
+            return { data: [], error: null };
+        } catch (err) {
+            console.error('Erro ao buscar agendamentos por intervalo:', err);
+            return { data: null, error: err };
         }
     };
 
@@ -144,6 +189,7 @@ export function useApiAgendamentos() {
         criarAgendamento,
         atualizarAgendamento,
         cancelarAgendamento,
-        deletarAgendamento
+        concluirAgendamento,
+        buscarPorIntervaloDeDatas
     };
 }

@@ -44,7 +44,7 @@ export function useApiServicos() {
     try {
       const data = await api('/servico/buscarServico', {
         method: 'GET',
-        params: { servicoId: id }
+        query: { servicoId: id }
       });
       return { data: mapBackendToFrontend(data), error: null };
     } catch (err) {
@@ -81,7 +81,7 @@ export function useApiServicos() {
     try {
       await api('/servico/deletarServico', {
         method: 'DELETE',
-        params: { servicoId: idFrontend }
+        query: { servicoId: idFrontend }
       });
       return { success: true, error: null };
     } catch (err) {

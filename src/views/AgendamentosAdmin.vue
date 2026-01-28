@@ -102,19 +102,24 @@
             <input type="date" v-model="filters.dataFim" />
           </div>
         </div>
-        <button @click="aplicarFiltros" class="btn-filter">
-          Aplicar Filtros
-        </button>
+        <div class="filter-buttons">
+          <button @click="aplicarFiltros" class="btn-filter">
+            Aplicar Filtros
+          </button>
+          <button @click="limparFiltros" class="btn-clear">
+            Limpar
+          </button>
+        </div>
       </div>
 
       <!-- Agendamentos List -->
-      <AgendamentosList role="ADM" />
+      <AgendamentosList role="ADM" :filtros="filtrosAplicados" :key="filtroKey" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, reactive } from 'vue';
 import { useApiAgendamentos } from '@/composables/useApiAgendamentos';
 import { useApiBarbeiros } from '@/composables/useApiBarbeiro';
 import AgendamentosList from '@/components/AgendamentosList.vue';
@@ -124,7 +129,17 @@ const { buscarTodosBarbeiros } = useApiBarbeiros();
 
 const agendamentos = ref([]);
 const barbeiros = ref([]);
+const filtroKey = ref(0);
+
 const filters = ref({
+  status: '',
+  barbeiro: '',
+  dataInicio: '',
+  dataFim: ''
+});
+
+// Filtros que serão passados para o componente (só atualiza ao clicar em Aplicar)
+const filtrosAplicados = reactive({
   status: '',
   barbeiro: '',
   dataInicio: '',
@@ -160,9 +175,24 @@ async function loadData() {
 }
 
 function aplicarFiltros() {
-  // Implementar lógica de filtros
-  console.log('Aplicando filtros:', filters.value);
-  // TODO: Filtrar agendamentos baseado nos filtros selecionados
+  // Copia os filtros atuais para os filtros aplicados
+  filtrosAplicados.status = filters.value.status;
+  filtrosAplicados.barbeiro = filters.value.barbeiro;
+  filtrosAplicados.dataInicio = filters.value.dataInicio;
+  filtrosAplicados.dataFim = filters.value.dataFim;
+  
+  // Incrementa key para forçar re-render se necessário
+  filtroKey.value++;
+}
+
+function limparFiltros() {
+  filters.value = {
+    status: '',
+    barbeiro: '',
+    dataInicio: '',
+    dataFim: ''
+  };
+  aplicarFiltros();
 }
 
 onMounted(loadData);
@@ -319,6 +349,11 @@ onMounted(loadData);
   box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
 }
 
+.filter-buttons {
+  display: flex;
+  gap: 15px;
+}
+
 .btn-filter {
   background: linear-gradient(135deg, #e63946, #c1121f);
   color: #fff;
@@ -334,6 +369,21 @@ onMounted(loadData);
   background: linear-gradient(135deg, #c1121f, #9d0208);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
+}
+
+.btn-clear {
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-clear:hover {
+  background: #444;
 }
 
 @media (max-width: 768px) {
