@@ -1,82 +1,84 @@
 <template>
   <section class="agendamentos-list">
     <h2>{{ title }}</h2>
-    
+
     <div v-if="loading" class="loading">
       <div class="spinner"></div>
       <p>Carregando agendamentos...</p>
     </div>
-    
+
     <div v-else-if="agendamentos.length === 0" class="empty-state">
-      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="4" width="18" height="18" rx="2"/>
-        <path d="M16 2v4M8 2v4M3 10h18"/>
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <path d="M16 2v4M8 2v4M3 10h18" />
       </svg>
       <p>Nenhum agendamento encontrado.</p>
     </div>
-    
+
     <div v-else class="agendamentos-grid">
-      <div 
-        v-for="agendamento in agendamentos" 
-        :key="agendamento.id" 
-        class="agendamento-card"
-        :class="`status-${agendamento.status.toLowerCase()}`"
-      >
+      <div v-for="agendamento in agendamentos" :key="agendamento.id" class="agendamento-card"
+        :class="`status-${agendamento.status.toLowerCase()}`">
         <div class="card-header">
           <span class="status-badge" :class="`badge-${agendamento.status.toLowerCase()}`">
             {{ agendamento.status }}
           </span>
           <span class="agendamento-id">#{{ agendamento.id }}</span>
         </div>
-        
+
         <div class="card-body">
           <div class="info-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M6 6l12 12M6 18L18 6"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M6 6l12 12M6 18L18 6" />
             </svg>
             <div class="info-content">
               <span class="label">Serviço:</span>
               <span class="value">{{ agendamento.servico }}</span>
             </div>
           </div>
-          
+
           <div class="info-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="8" r="5"/>
-              <path d="M20 21a8 8 0 1 0-16 0"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="8" r="5" />
+              <path d="M20 21a8 8 0 1 0-16 0" />
             </svg>
             <div class="info-content">
               <span class="label">Barbeiro:</span>
               <span class="value">{{ agendamento.barbeiro }}</span>
             </div>
           </div>
-          
+
           <div v-if="role === 'ADM' && agendamento.clienteNome" class="info-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
             </svg>
             <div class="info-content">
               <span class="label">Cliente:</span>
               <span class="value">{{ agendamento.clienteNome }}</span>
             </div>
           </div>
-          
+
           <div class="info-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2"/>
-              <path d="M16 2v4M8 2v4M3 10h18"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M16 2v4M8 2v4M3 10h18" />
             </svg>
             <div class="info-content">
               <span class="label">Data:</span>
               <span class="value">{{ agendamento.data }}</span>
             </div>
           </div>
-          
+
           <div class="info-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 6v6l4 2"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
             </svg>
             <div class="info-content">
               <span class="label">Horário:</span>
@@ -84,27 +86,36 @@
             </div>
           </div>
         </div>
-        
-        <div class="card-actions" v-if="canCancel(agendamento)">
-          <button 
-            @click="handleCancelar(agendamento)" 
-            class="btn btn-cancel"
-            :disabled="loading"
-          >
+
+        <div class="card-actions" v-if="canCancel(agendamento) || canFinish(agendamento)">
+          <!-- Botão Concluir para Admin + Pendente -->
+          <button v-if="canFinish(agendamento)" @click="abrirModalPagamento(agendamento)" class="btn btn-finish"
+            :disabled="loading">
+            Concluir e Registrar Pagamento
+          </button>
+
+          <!-- Botão Cancelar -->
+          <button v-if="canCancel(agendamento)" @click="handleCancelar(agendamento)" class="btn btn-cancel"
+            :disabled="loading" :style="canFinish(agendamento) ? 'margin-top: 10px;' : ''">
             Cancelar Agendamento
           </button>
         </div>
       </div>
     </div>
-    
+
     <p v-if="errorMessage" class="message error">{{ errorMessage }}</p>
     <p v-if="successMessage" class="message success">{{ successMessage }}</p>
+
+    <!-- Modal de Registro de Pagamento -->
+    <ModalRegistroPagamento :is-open="modalPagamentoAberto" :agendamento="agendamentoSelecionado"
+      @close="fecharModalPagamento" @payment-registered="handlePagamentoRegistrado" />
   </section>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { useApiAgendamentos } from '@/composables/useApiAgendamentos';
+import ModalRegistroPagamento from '@/components/ModalRegistroPagamento.vue';
 
 const props = defineProps({
   role: {
@@ -133,6 +144,8 @@ const todosAgendamentos = ref([]);
 const loading = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
+const modalPagamentoAberto = ref(false);
+const agendamentoSelecionado = ref(null);
 
 const title = computed(() => {
   return props.role === 'ADM' ? 'Todos os Agendamentos' : 'Meus Agendamentos';
@@ -179,7 +192,7 @@ async function carregarAgendamentos() {
   loading.value = true;
   errorMessage.value = '';
   successMessage.value = '';
-  
+
   try {
     let result;
     if (props.role === 'ADM') {
@@ -191,7 +204,7 @@ async function carregarAgendamentos() {
       }
       result = await buscarAgendamentosPorCliente(props.email);
     }
-    
+
     if (result.error) {
       errorMessage.value = 'Erro ao carregar agendamentos.';
       console.error(result.error);
@@ -217,22 +230,46 @@ function canCancel(agendamento) {
   return agendamento.status !== 'CANCELADO' && agendamento.status !== 'CONCLUIDO';
 }
 
+function canFinish(agendamento) {
+  return props.role === 'ADM' && agendamento.status === 'PENDENTE';
+}
+
+function abrirModalPagamento(agendamento) {
+  agendamentoSelecionado.value = agendamento;
+  modalPagamentoAberto.value = true;
+}
+
+function fecharModalPagamento() {
+  modalPagamentoAberto.value = false;
+  agendamentoSelecionado.value = null;
+}
+
+async function handlePagamentoRegistrado() {
+  successMessage.value = 'Pagamento registrado com sucesso!';
+  await carregarAgendamentos();
+  fecharModalPagamento();
+
+  setTimeout(() => {
+    successMessage.value = '';
+  }, 3000);
+}
+
 async function handleCancelar(agendamento) {
   if (!confirm(`Deseja realmente cancelar o agendamento #${agendamento.id}?`)) {
     return;
   }
-  
+
   loading.value = true;
   errorMessage.value = '';
   successMessage.value = '';
-  
+
   try {
     const result = await cancelarAgendamento(agendamento.id);
-    
+
     if (result.success) {
       successMessage.value = 'Agendamento cancelado com sucesso!';
       await carregarAgendamentos();
-      
+
       setTimeout(() => {
         successMessage.value = '';
       }, 3000);
@@ -285,7 +322,9 @@ h2 {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-state {
@@ -321,7 +360,7 @@ h2 {
 
 .agendamento-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .agendamento-card.status-pendente {
@@ -453,6 +492,17 @@ h2 {
   box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
 }
 
+.btn-finish {
+  background: linear-gradient(135deg, #2a9d8f, #1e7a6f);
+  color: #fff;
+}
+
+.btn-finish:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1e7a6f, #157061);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(42, 157, 143, 0.4);
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -485,7 +535,7 @@ h2 {
   .agendamentos-grid {
     grid-template-columns: 1fr;
   }
-  
+
   h2 {
     font-size: 1.5rem;
   }

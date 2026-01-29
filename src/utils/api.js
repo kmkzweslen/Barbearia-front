@@ -4,8 +4,7 @@ import { ofetch } from 'ofetch'
 const baseURL = 'https://barbearia-backend-x0st.onrender.com/api'
 
 export const api = ofetch.create({
-  baseURL,
-  credentials: 'omit', // Não envia cookies para evitar problemas CORS
+  baseURL: 'https://barbearia-backend-x0st.onrender.com/api',
 
   async onRequest({ options }) {
     // Verificar primeiro token de admin, depois de cliente

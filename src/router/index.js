@@ -8,6 +8,8 @@ import AgendamentosAdmin from '../views/AgendamentosAdmin.vue';
 import Financeiro from '../views/Financeiro.vue';
 import ClientePerfil from '../views/ClientePerfil.vue';
 import Cadastro from '../views/Cadastro.vue';
+import RelatorioServicos from '../views/RelatorioServicos.vue';
+import RankingClientes from '../views/RankingClientes.vue';
 
 const routes = [
   { path: '/', name: 'home', component: Home },
@@ -16,6 +18,8 @@ const routes = [
   { path: '/cadastro', name: 'cadastro', component: Cadastro },
   { path: '/admin', name: 'admin', component: AdminDashboard, meta: { requiresAdmin: true } },
   { path: '/admin/agendamentos', name: 'adminAgendamentos', component: AgendamentosAdmin, meta: { requiresAdmin: true } },
+  { path: '/admin/relatorio-servicos', name: 'relatorioServicos', component: RelatorioServicos, meta: { requiresAdmin: true } },
+  { path: '/admin/ranking-clientes', name: 'rankingClientes', component: RankingClientes, meta: { requiresAdmin: true } },
   { path: '/admin/financeiro', name: 'adminFinanceiro', component: Financeiro, meta: { requiresAdmin: true } },
   { path: '/cliente', name: 'cliente', component: ClientePerfil, meta: { requiresCliente: true } },
 ];

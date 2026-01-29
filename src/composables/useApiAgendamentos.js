@@ -65,6 +65,7 @@ const mapBackendToFrontend = (agendamento, servicos = [], barbeiros = []) => {
         id: agendamento.id,
         servico: servicoNome,
         servicoId: agendamento.servico?.id || agendamento.servicoId,
+        servicoPreco: agendamento.servico?.preco || agendamento.servicoPreco || 0,
         barbeiro: barbeiroNome,
         barbeiroEmail: agendamento.barbeiro?.email || agendamento.barbeiroEmail,
         clienteEmail: agendamento.cliente?.email || agendamento.clienteEmail,
@@ -128,7 +129,7 @@ export function useApiAgendamentos() {
             return { data: [], error: null };
         } catch (err) {
             console.log('Endpoint clienteEmail falhou, usando fallback...');
-            
+
             // Fallback: busca todos e filtra pelo email
             try {
                 const allData = await api('/agendamento/buscarTodosAgendamentos', {
@@ -140,7 +141,7 @@ export function useApiAgendamentos() {
                         const clienteEmail = agendamento.cliente?.email || agendamento.clienteEmail;
                         return clienteEmail && clienteEmail.toLowerCase() === email.toLowerCase();
                     });
-                    
+
                     const dadosMapeados = await enriquecerAgendamentos(agendamentosDoCliente);
                     return { data: dadosMapeados, error: null };
                 }
@@ -212,17 +213,16 @@ export function useApiAgendamentos() {
         }
     };
 
-    // Concluir agendamento (registra pagamento e histórico)
-    const concluirAgendamento = async (id, formaPagamento) => {
+    // Concluir agendamento e registrar pagamento
+    const concluirAgendamento = async (agendamentoId, formaPagamento) => {
         try {
-            await api('/agendamento/concluirAgendamento', {
-                method: 'PATCH',
-                query: { agendamentoId: id, formaPagamento }
+            const data = await api(`/agendamento/concluirAgendamento?agendamentoId=${agendamentoId}&formaPagamento=${formaPagamento}`, {
+                method: 'PATCH'
             });
-            return { success: true, error: null };
+            return { data: mapBackendToFrontend(data), error: null };
         } catch (err) {
             console.error('Erro ao concluir agendamento:', err);
-            return { success: false, error: err };
+            return { data: null, error: err };
         }
     };
 
