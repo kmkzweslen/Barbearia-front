@@ -1,8 +1,10 @@
 import { ofetch } from 'ofetch'
 
+// Usa URL direta do backend (proxy não resolve CORS do backend)
+const baseURL = 'https://barbearia-backend-x0st.onrender.com/api'
+
 export const api = ofetch.create({
   baseURL: 'https://barbearia-backend-x0st.onrender.com/api',
-  
 
   async onRequest({ options }) {
     // Verificar primeiro token de admin, depois de cliente
@@ -16,6 +18,12 @@ export const api = ofetch.create({
         Authorization: `Bearer ${token}`
       };
     }
+    
+    // Headers para tentar evitar problemas CORS
+    options.headers = {
+      ...options.headers,
+      'Content-Type': 'application/json',
+    };
   },
 
   async onResponseError({ response }) {

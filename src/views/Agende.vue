@@ -99,6 +99,7 @@
               </svg>
             </div>
             <h3 class="barbeiro-name">{{ barbeiro.nome }}</h3>
+            <p class="barbeiro-especialidade">{{ barbeiro.especialidade || 'Barbeiro Profissional' }}</p>
             <p class="barbeiro-phone">{{ barbeiro.telefone }}</p>
             <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 18l6-6-6-6"/>
@@ -210,8 +211,8 @@ const successMessage = ref('')
 
 const clienteEmail = ref(localStorage.getItem('emailCliente') || '')
 
-// Gera horários disponíveis divididos por período
-const gerarHorarios = () => {
+// Gera todos os horários base divididos por período
+const gerarTodosHorarios = () => {
   const horarios = {
     manha: [],
     tarde: [],
@@ -238,7 +239,38 @@ const gerarHorarios = () => {
   return horarios
 }
 
-const horarios = gerarHorarios()
+const todosHorarios = gerarTodosHorarios()
+
+// Filtra horários disponíveis baseado na data selecionada
+const horarios = computed(() => {
+  const hoje = new Date().toISOString().split('T')[0]
+  
+  // Se a data selecionada não é hoje, retorna todos os horários
+  if (selectedDate.value !== hoje) {
+    return todosHorarios
+  }
+  
+  // Se é hoje, filtra horários que já passaram (com margem de 30 minutos)
+  const agora = new Date()
+  const horaAtual = agora.getHours()
+  const minutoAtual = agora.getMinutes()
+  
+  const filtrarHorarios = (listaHorarios) => {
+    return listaHorarios.filter(horario => {
+      const [hora, minuto] = horario.split(':').map(Number)
+      // Adiciona margem de 30 minutos
+      if (hora > horaAtual) return true
+      if (hora === horaAtual && minuto > minutoAtual + 30) return true
+      return false
+    })
+  }
+  
+  return {
+    manha: filtrarHorarios(todosHorarios.manha),
+    tarde: filtrarHorarios(todosHorarios.tarde),
+    noite: filtrarHorarios(todosHorarios.noite)
+  }
+})
 
 // Gera próximos 14 dias
 const proximosDias = computed(() => {
@@ -333,12 +365,13 @@ async function confirmarAgendamento() {
   const horarioCompleto = `${selectedDate.value}T${selectedHorario.value}:00`
 
   const payload = {
-    servicoId: Number(selectedServico.value.servicoId),
+    servicoId: selectedServico.value.servicoId || selectedServico.value.id,
     barbeiroEmail: selectedBarbeiro.value.email,
     clienteEmail: clienteEmail.value,
-    horario: horarioCompleto,
-    status: 'PENDENTE'
+    horario: horarioCompleto
   }
+  
+  console.log('Payload do agendamento:', payload)
 
   try {
     const resp = await api('/agendamento/criarAgendamento', {
@@ -599,6 +632,13 @@ function formatDateDisplay(dateISO) {
   font-size: 16px;
   margin-bottom: 4px;
   color: #fff;
+}
+
+.barbeiro-especialidade {
+  font-size: 14px;
+  color: #e63946;
+  margin: 4px 0;
+  font-weight: 500;
 }
 
 .barbeiro-phone {

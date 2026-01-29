@@ -40,8 +40,13 @@
       <div class="about-container">
         <div class="about-content">
           <div class="section-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+            <!-- Ícone de tesoura -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="6" cy="6" r="3"/>
+              <circle cx="6" cy="18" r="3"/>
+              <line x1="20" y1="4" x2="8.12" y2="15.88"/>
+              <line x1="14.47" y1="14.48" x2="20" y2="20"/>
+              <line x1="8.12" y1="8.12" x2="12" y2="12"/>
             </svg>
           </div>
           <h2>NOSSA MARCA</h2>
@@ -63,8 +68,12 @@
       <div class="team-header">
         <h2>EQUIPE</h2>
         <div class="section-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L8 8h8l-4-6zm0 20l4-6H8l4 6z"/>
+          <!-- Ícone de equipe/pessoas -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
         </div>
       </div>
@@ -76,13 +85,13 @@
       </p>
       
       <div class="team-grid" v-if="barbeiros.length > 0">
-        <div v-for="barbeiro in barbeiros" :key="barbeiro.email" class="barber-card">
+        <div v-for="(barbeiro, index) in barbeiros" :key="barbeiro.email" class="barber-card">
           <div class="barber-image">
-            <img :src="barbeiro.foto || 'https://via.placeholder.com/300x300?text=Barbeiro'" :alt="barbeiro.nome" />
+            <img :src="barbeiro.foto || getBarbeiroImage(index)" :alt="barbeiro.nome" />
           </div>
           <div class="barber-info">
             <h3>{{ barbeiro.nome }}</h3>
-            <p>{{ barbeiro.especialidade }}</p>
+            <p>{{ barbeiro.especialidade || 'Barbeiro Profissional' }}</p>
           </div>
         </div>
       </div>
@@ -100,8 +109,8 @@
       </div>
       
       <div class="booking-images">
-        <div class="booking-image" v-for="n in 3" :key="n">
-          <img :src="`https://images.unsplash.com/photo-${1503951914724 + n}?w=300&h=300&fit=crop`" alt="Serviço" />
+        <div class="booking-image" v-for="(img, index) in servicoImages" :key="index">
+          <img :src="img" alt="Serviço" />
         </div>
       </div>
     </section>
@@ -129,6 +138,26 @@ export default {
       'https://images.unsplash.com/photo-1503951914724-5f0e98c4e0a4?w=1920&h=1080&fit=crop',
       'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=1920&h=1080&fit=crop'
     ];
+    
+    // Imagens de barbeiros profissionais
+    const barbeiroImages = [
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face',
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face',
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face',
+      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&crop=face',
+      'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=300&fit=crop&crop=face'
+    ];
+    
+    // Imagens de serviços de barbearia
+    const servicoImages = [
+      'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=300&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=300&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=300&h=300&fit=crop'
+    ];
+    
+    const getBarbeiroImage = (index) => {
+      return barbeiroImages[index % barbeiroImages.length];
+    };
     
     let autoSlideInterval = null;
     
@@ -185,10 +214,12 @@ export default {
       currentSlide,
       carouselImages,
       barbeiros,
+      servicoImages,
       nextSlide,
       prevSlide,
       goToSlide,
-      handleAgendar
+      handleAgendar,
+      getBarbeiroImage
     };
   }
 };

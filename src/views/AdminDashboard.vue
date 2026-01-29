@@ -4,10 +4,11 @@
       <div class="header-content">
         <h1>💈 Painel Administrativo</h1>
         <button @click="handleLogout" class="btn-logout">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
           Sair
         </button>
@@ -16,38 +17,92 @@
 
 
     <div class="dashboard-container">
+      <!-- Quick Access Cards -->
+      <div class="quick-access">
+        <router-link to="/admin/agendamentos" class="quick-card">
+          <div class="quick-icon" style="background: rgba(42, 157, 143, 0.2); color: #2a9d8f;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M16 2v4M8 2v4M3 10h18" />
+            </svg>
+          </div>
+          <div class="quick-content">
+            <h3>Agendamentos</h3>
+            <p>Gerencie os agendamentos da barbearia</p>
+          </div>
+          <svg class="quick-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </router-link>
+
+        <router-link to="/admin/financeiro" class="quick-card">
+          <div class="quick-icon" style="background: rgba(234, 179, 8, 0.2); color: #eab308;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+          </div>
+          <div class="quick-content">
+            <h3>Financeiro</h3>
+            <p>Consultas, despesas e relatórios</p>
+          </div>
+          <svg class="quick-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </router-link>
+
+        <router-link to="/admin/relatorio-servicos" class="quick-card">
+          <div class="quick-icon" style="background: rgba(99, 102, 241, 0.2); color: #6366f1;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M3 3v18h18" />
+              <path d="M18 17V9" />
+              <path d="M13 17V5" />
+              <path d="M8 17v-3" />
+            </svg>
+          </div>
+          <div class="quick-content">
+            <h3>Serviços Mais Realizados</h3>
+            <p>Visualize os serviços com maior procura</p>
+          </div>
+          <svg class="quick-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </router-link>
+
+        <router-link to="/admin/ranking-clientes" class="quick-card">
+          <div class="quick-icon" style="background: rgba(236, 72, 153, 0.2); color: #ec4899;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+              <path d="M4 22h16" />
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+            </svg>
+          </div>
+          <div class="quick-content">
+            <h3>Ranking de Clientes</h3>
+            <p>Veja seus clientes mais ativos</p>
+          </div>
+          <svg class="quick-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </router-link>
+      </div>
       <!-- Navigation Tabs -->
       <div class="nav-tabs">
-        <button 
-          v-for="tab in tabs" 
-          :key="tab.id"
-          :class="['nav-tab', { active: selected === tab.id }]"
-          @click="selectTab(tab.id)"
-        >
+        <button v-for="tab in tabs" :key="tab.id" :class="['nav-tab', { active: selected === tab.id }]"
+          @click="selectTab(tab.id)">
           <component :is="tab.icon" />
           {{ tab.label }}
         </button>
-      </div>
-
-      <!-- Quick Access Cards -->
-      <div class="quick-access">
-        <router-link to="/admin/relatorio-servicos" class="quick-card">
-          <div class="card-icon">📊</div>
-          <h3>Serviços Mais Realizados</h3>
-          <p>Visualize os serviços com maior procura</p>
-        </router-link>
-        
-        <router-link to="/admin/ranking-clientes" class="quick-card">
-          <div class="card-icon">🏆</div>
-          <h3>Ranking de Clientes</h3>
-          <p>Veja seus clientes mais ativos</p>
-        </router-link>
-        
-        <router-link to="/admin/agendamentos" class="quick-card">
-          <div class="card-icon">📅</div>
-          <h3>Agendamentos</h3>
-          <p>Gerencie todos os agendamentos</p>
-        </router-link>
       </div>
 
       <!-- Serviços -->
@@ -105,15 +160,17 @@
                   <td>{{ servico.descricao }}</td>
                   <td class="actions">
                     <button @click="editServico(servico)" class="btn-icon btn-edit">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                       </svg>
                     </button>
                     <button @click="removerServico(servico.id)" class="btn-icon btn-delete">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                       </svg>
                     </button>
                   </td>
@@ -150,7 +207,8 @@
               </div>
               <div class="form-group">
                 <label>Senha</label>
-                <input v-model="formCliente.senha" type="password" placeholder="Mínimo 6 caracteres" :required="!isEditingCliente" minlength="6" />
+                <input v-model="formCliente.senha" type="password" placeholder="Mínimo 6 caracteres"
+                  :required="!isEditingCliente" minlength="6" />
               </div>
             </div>
             <div class="form-actions">
@@ -185,15 +243,17 @@
                   <td>{{ cliente.email }}</td>
                   <td class="actions">
                     <button @click="editCliente(cliente)" class="btn-icon btn-edit">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                       </svg>
                     </button>
                     <button @click="removerCliente(cliente.email)" class="btn-icon btn-delete">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                       </svg>
                     </button>
                   </td>
@@ -267,15 +327,17 @@
                   <td>{{ barbeiro.especialidade }}</td>
                   <td class="actions">
                     <button @click="editBarbeiro(barbeiro)" class="btn-icon btn-edit">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                       </svg>
                     </button>
                     <button @click="removerBarbeiro(barbeiro.email)" class="btn-icon btn-delete">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                       </svg>
                     </button>
                   </td>
@@ -542,7 +604,7 @@ const handleLogout = () => {
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .header-content {
@@ -584,6 +646,70 @@ const handleLogout = () => {
   max-width: 1400px;
   margin: 0 auto;
   padding: 30px;
+}
+
+/* Quick Access Cards */
+.quick-access {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.quick-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px 25px;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.quick-card:hover {
+  background: #222;
+  border-color: #e63946;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.quick-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quick-content {
+  flex: 1;
+}
+
+.quick-content h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.quick-content p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.quick-arrow {
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.quick-card:hover .quick-arrow {
+  color: #e63946;
+  transform: translateX(4px);
 }
 
 .nav-tabs {
@@ -667,8 +793,15 @@ const handleLogout = () => {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .section-header {
@@ -681,7 +814,8 @@ const handleLogout = () => {
   margin: 0;
 }
 
-.form-card, .list-card {
+.form-card,
+.list-card {
   background: #1a1a1a;
   border-radius: 12px;
   padding: 30px;
@@ -689,7 +823,8 @@ const handleLogout = () => {
   border: 1px solid #333;
 }
 
-.form-card h3, .list-card h3 {
+.form-card h3,
+.list-card h3 {
   margin: 0 0 20px 0;
   color: #e63946;
   font-size: 1.3rem;
@@ -785,7 +920,8 @@ const handleLogout = () => {
   cursor: not-allowed;
 }
 
-.loading, .empty {
+.loading,
+.empty {
   text-align: center;
   padding: 40px;
   color: #666;
@@ -863,28 +999,29 @@ tr:hover {
   .dashboard-container {
     padding: 20px 15px;
   }
-  
+
   .nav-tabs {
     flex-direction: column;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .btn {
     width: 100%;
   }
-  
+
   .table-container {
     font-size: 0.85rem;
   }
-  
-  th, td {
+
+  th,
+  td {
     padding: 10px;
   }
 }

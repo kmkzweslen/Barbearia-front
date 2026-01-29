@@ -25,9 +25,17 @@
         </div>
       </div>
 
-      <!-- Histórico de Atendimentos -->
+      <!-- Histórico de Atendimentos - Só mostra quando tiver o email -->
       <div class="historico-section">
-        <AgendamentosList role="CLIENTE" :email="clienteData?.email || ''" />
+        <AgendamentosList 
+          v-if="clienteEmail" 
+          role="CLIENTE" 
+          :email="clienteEmail" 
+          :key="clienteEmail"
+        />
+        <div v-else class="loading">
+          <p>Carregando agendamentos...</p>
+        </div>
       </div>
 
       <!-- Botão Sair -->
@@ -44,7 +52,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import { useApiClientes } from '@/composables/useApiClientes';
@@ -57,10 +65,20 @@ export default {
   },
   setup() {
     const router = useRouter();
-    const { logout, getCurrentUser } = useAuth();
+    const { logout, getCurrentUser, initAuth } = useAuth();
     const { buscarCliente } = useApiClientes();
     
     const clienteData = ref(null);
+    
+    // Email do cliente - pega do localStorage diretamente para garantir
+    const clienteEmail = computed(() => {
+      // Primeiro tenta do clienteData carregado
+      if (clienteData.value && clienteData.value.email) {
+        return clienteData.value.email;
+      }
+      // Fallback: pega direto do localStorage
+      return localStorage.getItem('emailCliente') || '';
+    });
     
     const handleLogout = () => {
       if (confirm('Deseja realmente sair?')) {
@@ -69,9 +87,15 @@ export default {
     };
     
     const loadClienteData = async () => {
+      // Reinicializa auth para garantir que pegou os dados do localStorage
+      initAuth();
+      
+      // Tenta pegar email do getCurrentUser ou do localStorage
       const user = getCurrentUser();
-      if (user && user.email) {
-        const { data, error } = await buscarCliente(user.email);
+      const email = user?.email || localStorage.getItem('emailCliente');
+      
+      if (email) {
+        const { data, error } = await buscarCliente(email);
         if (data && !error) {
           clienteData.value = data;
         }
@@ -90,6 +114,7 @@ export default {
     
     return {
       clienteData,
+      clienteEmail,
       handleLogout
     };
   }
