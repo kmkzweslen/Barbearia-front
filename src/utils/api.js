@@ -2,6 +2,7 @@ import { ofetch } from 'ofetch'
 
 export const api = ofetch.create({
   baseURL: 'https://barbearia-backend-x0st.onrender.com/api',
+  
 
   async onRequest({ options }) {
     // Verificar primeiro token de admin, depois de cliente

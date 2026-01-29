@@ -21,6 +21,7 @@ const mapBackendToFrontend = (agendamento) => {
         id: agendamento.id,
         servico: agendamento.servico?.nome || agendamento.servicoNome || 'N/A',
         servicoId: agendamento.servico?.id || agendamento.servicoId,
+        servicoPreco: agendamento.servico?.preco || agendamento.servicoPreco || 0,
         barbeiro: agendamento.barbeiro?.nome || agendamento.barbeiroNome || 'N/A',
         barbeiroEmail: agendamento.barbeiro?.email || agendamento.barbeiroEmail,
         clienteEmail: agendamento.cliente?.email || agendamento.clienteEmail,
@@ -114,8 +115,8 @@ export function useApiAgendamentos() {
     // Cancelar agendamento
     const cancelarAgendamento = async (id) => {
         try {
-            await api(`/agendamento/cancelarAgendamento?id=${id}`, {
-                method: 'DELETE'
+            await api(`/agendamento/cancelarAgendamento?agendamentoId=${id}`, {
+                method: 'PATCH'
             });
             return { success: true, error: null };
         } catch (err) {
@@ -137,6 +138,19 @@ export function useApiAgendamentos() {
         }
     };
 
+    // Concluir agendamento e registrar pagamento
+    const concluirAgendamento = async (agendamentoId, formaPagamento) => {
+        try {
+            const data = await api(`/agendamento/concluirAgendamento?agendamentoId=${agendamentoId}&formaPagamento=${formaPagamento}`, {
+                method: 'PATCH'
+            });
+            return { data: mapBackendToFrontend(data), error: null };
+        } catch (err) {
+            console.error('Erro ao concluir agendamento:', err);
+            return { data: null, error: err };
+        }
+    };
+
     return {
         buscarTodosAgendamentos,
         buscarAgendamentosPorCliente,
@@ -144,6 +158,7 @@ export function useApiAgendamentos() {
         criarAgendamento,
         atualizarAgendamento,
         cancelarAgendamento,
-        deletarAgendamento
+        deletarAgendamento,
+        concluirAgendamento
     };
 }
